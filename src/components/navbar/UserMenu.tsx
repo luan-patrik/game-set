@@ -23,15 +23,15 @@ const UserMenu = ({ user }: UserMenuProps) => {
       <DropdownMenuTrigger>
         <UserAvatar
           user={{ image: user.image || null }}
-          className="h-10 w-10 ring-2 ring-foreground ring-offset-background"
+          className='h-10 w-10 ring-2 ring-foreground ring-offset-background'
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align='end'>
         <DropdownMenuItem asChild>
           <Link href={'/game-settings'}>Minhas configurações</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="font-bold" onClick={() => signOut()}>
+        <DropdownMenuItem className='font-bold' onClick={() => signOut()}>
           Sair
         </DropdownMenuItem>
       </DropdownMenuContent>

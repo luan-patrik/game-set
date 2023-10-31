@@ -24,11 +24,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR" className={inter.variable}>
-      <body>
+    <html lang='pt-BR' className={inter.variable}>
+      <body className='dark'>
         <Providers>
           <Navbar />
-          <main className="container">{children}</main>
+          <main className='container'>{children}</main>
         </Providers>
       </body>
     </html>
