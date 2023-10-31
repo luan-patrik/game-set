@@ -55,6 +55,12 @@ export const config = {
       }
     },
   },
+  pages: {
+    signIn: '/sign-in',
+    error: '/sign-in',
+    signOut: '/',
+  },
+
   secret: process.env.NEXT_SECRET,
 } satisfies NextAuthOptions
 
