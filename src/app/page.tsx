@@ -1,4 +1,4 @@
-import Editor from '@/components/Editor'
+import Editor from '@/components/editor/Editor'
 import Home from '@/components/Home'
 import { useGetAllPostSettings } from '@/hooks/use-get-all-post-settings'
 import {
@@ -11,7 +11,7 @@ export default async function PageHome() {
   const queryClient = new QueryClient()
 
   await queryClient.prefetchQuery({
-    queryKey: ['getAllSettings'],
+    queryKey: ['all'],
     queryFn: useGetAllPostSettings,
   })
 
