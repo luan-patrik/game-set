@@ -2,10 +2,10 @@ import { auth } from '@/lib/auth'
 import prisma from '@/lib/db'
 import { NextResponse } from 'next/server'
 
-export async function GET(req: Request) {
-  const session = await auth()
-
+export async function GET() {
   try {
+    const session = await auth()
+
     if (!session) return new NextResponse('Unauthorized', { status: 401 })
 
     const data = await prisma.settings.findFirst({

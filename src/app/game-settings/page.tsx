@@ -1,7 +1,7 @@
-import Editor from '@/components/Editor'
+import EditorOutput from '@/components/editor/EditorOutput'
 
-const gameSettingsPage = () => {
-  return <Editor />
+export async function gameSettingsPage() {
+  return <EditorOutput />
 }
 
 export default gameSettingsPage

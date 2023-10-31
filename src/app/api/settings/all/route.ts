@@ -1,11 +1,22 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/db'
+import { auth } from '@/lib/auth'
 
 export async function GET() {
   try {
+    const session = await auth()
+
     const allPostSettings = await prisma.settings.findMany({
       where: {
-        private: false,
+        OR: [
+          {
+            private: false,
+          },
+          {
+            private: session?.user && true,
+            authorId: session?.user.id,
+          },
+        ],
       },
       select: {
         id: true,
