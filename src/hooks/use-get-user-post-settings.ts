@@ -1,3 +1,4 @@
+import { userPostSettings } from '@/types/settings/userPostSettings'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
@@ -6,7 +7,7 @@ export const useGetUserPostSettings = () => {
     queryKey: ['user'],
     queryFn: async () => {
       const { data } = await axios.get('/api/settings/user/')
-      return data
+      return data as userPostSettings
     },
   })
 }
