@@ -1,41 +1,53 @@
 'use client'
 
-import { useEditor, EditorContent } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import { useMutation } from '@tanstack/react-query'
+import { useState } from 'react'
+import { Loader2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '../ui/button'
+import { useRouter } from 'next/navigation'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  useEditor,
+  EditorContent,
+  BubbleMenu,
+  FloatingMenu,
+} from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
 import { PostCreationRequest, PostValidator } from '@/validators/post'
-import EditorMenuBar from './EditorMenuBar'
+import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import { FormField } from '../ui/form'
+import FloatingMenuBar from './FloatingMenuBar'
+import BubbleMenuBar from './BubbleMenuBar'
 
-const Editor = ({ content }: { content: string }) => {
-  const {
-    getValues,
-    register,
-    setValue,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<PostCreationRequest>({
-    resolver: zodResolver(PostValidator),
-    defaultValues: {
-      content: content,
-      isPrivate: false,
-    },
-  })
+const Editor = ({
+  content,
+  isPrivate,
+}: {
+  content: string
+  isPrivate: boolean
+}) => {
+  const queryClient = useQueryClient()
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const { register, getValues, setValue, handleSubmit, control } =
+    useForm<PostCreationRequest>({
+      resolver: zodResolver(PostValidator),
+      defaultValues: {
+        content: content,
+        isPrivate: isPrivate,
+      },
+    })
 
   const editor = useEditor({
     autofocus: true,
     extensions: [StarterKit],
-    content: getValues('content'),
+    content: content,
     editorProps: {
       attributes: {
-        class:
-          'prose prose-strong:text-foreground prose-headings:text-foreground prose-code:text-foreground prose-p:text-foreground prose-code:bg-muted prose-code:rounded prose-code:p-0.5 border rounded-md min-h-[26rem] min-w-full focus-visible:outline p-2',
+        class: 'outline-none',
       },
     },
     onUpdate: ({ editor }) => {
@@ -50,8 +62,15 @@ const Editor = ({ content }: { content: string }) => {
         isPrivate,
       }
       const { data } = await axios.post('/api/settings/create', payload)
-
       return data
+    },
+    onSuccess() {
+      queryClient.refetchQueries({ queryKey: ['user'] })
+      queryClient.refetchQueries({ queryKey: ['detail'] })
+      router.push('/')
+    },
+    onError() {
+      setIsLoading(false)
     },
   })
 
@@ -60,6 +79,7 @@ const Editor = ({ content }: { content: string }) => {
       content: getValues('content'),
       isPrivate: getValues('isPrivate'),
     }
+    setIsLoading(true)
     create(payload)
   }
 
@@ -68,13 +88,37 @@ const Editor = ({ content }: { content: string }) => {
       className='flex flex-col gap-2 py-4'
       onSubmit={handleSubmit(onSubmit)}
     >
-      {editor && <EditorMenuBar editor={editor} />}
-      <EditorContent value={getValues('content')} editor={editor} />
-      {errors && (
-        <span className='text-sm text-destructive'>
-          {errors.content?.message}
-        </span>
-      )}
+      <div>
+        <EditorContent
+          value={getValues('content')}
+          editor={editor}
+          className='prose min-h-[16rem] min-w-full rounded-md p-2 ring-2 ring-ring'
+        />
+
+        {editor ? (
+          <FloatingMenu
+            editor={editor}
+            shouldShow={({ state }) => {
+              const { $from } = state.selection
+
+              const currentLineText = $from.nodeBefore?.textContent
+
+              return currentLineText === '/'
+            }}
+          >
+            <FloatingMenuBar editor={editor} />
+          </FloatingMenu>
+        ) : null}
+
+        {editor ? (
+          <BubbleMenu
+            className='flex divide-x divide-foreground overflow-hidden rounded-md border border-solid border-foreground bg-background shadow-xl'
+            editor={editor}
+          >
+            <BubbleMenuBar editor={editor} />
+          </BubbleMenu>
+        ) : null}
+      </div>
       <FormField
         control={control}
         name='isPrivate'
@@ -92,8 +136,8 @@ const Editor = ({ content }: { content: string }) => {
           </div>
         )}
       />
-      <Button className='w-full' type='submit'>
-        Enviar
+      <Button disabled={isLoading} className='w-full' type='submit'>
+        {isLoading ? <Loader2 className='h-6 w-6 animate-spin' /> : 'Enviar'}
       </Button>
     </form>
   )

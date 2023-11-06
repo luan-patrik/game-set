@@ -8,7 +8,7 @@ const EditorOutput = () => {
 
   if (isLoading) return 'Loading...'
 
-  return <Editor content={data?.content || ''} />
+  return <Editor content={data?.content || ''} isPrivate={data?.private} />
 }
 
 export default EditorOutput
