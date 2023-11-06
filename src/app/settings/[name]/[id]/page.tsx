@@ -1,5 +1,4 @@
 import DetailSettings from '@/components/DetailSettings'
-import { useGetDetailSettings } from '@/hooks/use-get-detail-post-settings'
 
 export default function SettingsPage({
   params,

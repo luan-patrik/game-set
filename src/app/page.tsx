@@ -1,4 +1,3 @@
-import Editor from '@/components/editor/Editor'
 import Home from '@/components/Home'
 import { useGetAllPostSettings } from '@/hooks/use-get-all-post-settings'
 import {
