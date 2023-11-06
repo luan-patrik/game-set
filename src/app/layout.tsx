@@ -25,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='pt-BR' className={inter.variable}>
-      <body className='dark'>
+      <body>
         <Providers>
           <Navbar />
           <main className='container'>{children}</main>
