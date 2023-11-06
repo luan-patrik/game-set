@@ -20,7 +20,10 @@ export async function POST(req: Request) {
         authorId: session.user.id,
       },
     })
-    if (content === existingPost?.content) {
+    if (
+      content === existingPost?.content &&
+      isPrivate === existingPost.private
+    ) {
       return new NextResponse('No changes were made.', { status: 304 })
     }
 
