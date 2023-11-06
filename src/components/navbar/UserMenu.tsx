@@ -31,7 +31,15 @@ const UserMenu = ({ user }: UserMenuProps) => {
           <Link href={'/game-settings'}>Minhas configurações</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className='font-bold' onClick={() => signOut()}>
+        <DropdownMenuItem
+          className='font-bold'
+          onClick={() =>
+            signOut({
+              callbackUrl: '/',
+              redirect: true,
+            })
+          }
+        >
           Sair
         </DropdownMenuItem>
       </DropdownMenuContent>
