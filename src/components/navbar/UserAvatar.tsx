@@ -12,12 +12,14 @@ const UserAvatar = ({ user, ...props }: UserAvatarProps) => {
   return (
     <Avatar {...props}>
       {user.image ? (
-        <div className="relative aspect-square h-full">
+        <div className='relative aspect-square h-full'>
           <Image
-            fill
+            width={50}
+            height={50}
             src={user.image}
-            alt="Avatar"
-            referrerPolicy="no-referrer"
+            priority
+            alt='Avatar'
+            referrerPolicy='no-referrer'
           />
         </div>
       ) : (

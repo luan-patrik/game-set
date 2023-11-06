@@ -13,13 +13,19 @@ export async function POST(req: Request) {
       return new NextResponse('Unauthorized.', { status: 401 })
     }
 
-    const { content } = PostValidator.parse(body)
+    const { content, isPrivate } = PostValidator.parse(body)
 
     const existingPost = await prisma.settings.findFirst({
       where: {
         authorId: session.user.id,
       },
     })
+    if (
+      content === existingPost?.content &&
+      isPrivate === existingPost.private
+    ) {
+      return new NextResponse('No changes were made.', { status: 304 })
+    }
 
     if (existingPost) {
       await prisma.settings.update({
@@ -28,6 +34,7 @@ export async function POST(req: Request) {
         },
         data: {
           content,
+          private: isPrivate,
         },
       })
       return new NextResponse('Game settings updated successfully.', {
@@ -39,6 +46,7 @@ export async function POST(req: Request) {
       data: {
         authorId: session.user.id,
         content,
+        private: isPrivate,
       },
     })
 

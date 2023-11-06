@@ -9,25 +9,27 @@ const Navbar = async () => {
   const session = await auth()
 
   return (
-    <header className="sticky inset-x-0 top-0 z-40 border-b bg-background py-2">
-      <nav className="container flex items-center justify-between">
-        <Link href="/">
-          <Image src="/assets/logo.jpg" alt="logo" width={50} height={50} />
+    <header className='sticky inset-x-0 top-0 z-40 border-b bg-background py-2'>
+      <nav className='container flex items-center justify-between'>
+        <Link href='/'>
+          <Image
+            src='/assets/logo.jpg'
+            alt='logo'
+            priority
+            width={50}
+            height={50}
+          />
         </Link>
-        <ul>
-          <li>
-            {session?.user ? (
-              <UserMenu user={session.user} />
-            ) : (
-              <Link
-                className={buttonVariants({ variant: 'outline' })}
-                href="sign-in"
-              >
-                Entrar
-              </Link>
-            )}
-          </li>
-        </ul>
+        {session?.user ? (
+          <UserMenu user={session.user} />
+        ) : (
+          <Link
+            className={buttonVariants({ variant: 'outline' })}
+            href='/sign-in'
+          >
+            Entrar
+          </Link>
+        )}
       </nav>
     </header>
   )
