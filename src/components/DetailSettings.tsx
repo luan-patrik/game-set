@@ -1,7 +1,9 @@
 'use client'
 
+import * as DOMPurify from 'dompurify'
 import { useGetDetailSettings } from '@/hooks/use-get-detail-post-settings'
 import { Card, CardContent } from './ui/card'
+import { notFound } from 'next/navigation'
 
 interface DetailSettingsProps {
   name: string
@@ -13,12 +15,18 @@ const DetailSettings = ({ name, id }: DetailSettingsProps) => {
 
   if (isLoading) return 'Loading...'
 
+  const clean = DOMPurify.sanitize(data?.content, {
+    USE_PROFILES: { html: true },
+  })
+
+  if (!data) return notFound()
+
   return (
     <div className='py-4'>
-      <Card className='prose prose-sm mx-auto w-full sm:prose lg:prose-lg focus:outline-none'>
+      <Card className='prose mx-auto w-full'>
         <CardContent
           className='p-2'
-          dangerouslySetInnerHTML={{ __html: data?.content }}
+          dangerouslySetInnerHTML={{ __html: clean }}
         ></CardContent>
       </Card>
     </div>
