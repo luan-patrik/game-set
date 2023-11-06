@@ -20,6 +20,9 @@ export async function POST(req: Request) {
         authorId: session.user.id,
       },
     })
+    if (content === existingPost?.content) {
+      return new NextResponse('No changes were made.', { status: 304 })
+    }
 
     if (existingPost) {
       await prisma.settings.update({
