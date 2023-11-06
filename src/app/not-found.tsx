@@ -3,7 +3,7 @@ import React from 'react'
 
 export default async function NotFound() {
   return (
-    <div className='container flex min-h-[calc(100vh_-_4.2rem)] flex-col items-center justify-center'>
+    <div className='flex min-h-[calc(100vh_-_4.2rem)] flex-col items-center justify-center'>
       <div>
         <h2 className='inline-block w-full text-center align-top text-4xl font-bold sm:mb-0 sm:mr-6 sm:w-fit sm:border-r sm:pb-0 sm:pr-6 sm:text-start'>
           404
