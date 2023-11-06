@@ -14,8 +14,10 @@ const UserAvatar = ({ user, ...props }: UserAvatarProps) => {
       {user.image ? (
         <div className='relative aspect-square h-full'>
           <Image
-            fill
+            width={50}
+            height={50}
             src={user.image}
+            priority
             alt='Avatar'
             referrerPolicy='no-referrer'
           />

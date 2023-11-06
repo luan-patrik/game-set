@@ -1,6 +1,6 @@
 'use client'
 
-import { signIn, useSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { Button } from './ui/button'
 import {
   Card,
@@ -9,9 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from './ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 import { useToast } from './ui/use-toast'
-import { redirect } from 'next/navigation'
 
 const UserAuthForm = () => {
   const { toast } = useToast()

@@ -20,6 +20,7 @@ const Home = () => {
                 <Image
                   alt={`Avatar de ${item.author.name}`}
                   src={item.author.image}
+                  priority
                   quality={100}
                   className='select-none rounded-full'
                   width={224}
