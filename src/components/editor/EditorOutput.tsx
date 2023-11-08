@@ -8,9 +8,8 @@ const EditorOutput = () => {
   const { data, isLoading } = useGetUserPostSettings()
 
   if (isLoading) return 'Loading...'
-  if (!data) return notFound()
 
-  return <Editor content={data.content || ''} isPrivate={data.private} />
+  return <Editor content={data?.content || ''} isPrivate={data?.private || false} />
 }
 
 export default EditorOutput
