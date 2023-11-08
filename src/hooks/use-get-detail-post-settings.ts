@@ -1,3 +1,4 @@
+import { detailPostSettings } from '@/types/settings/detailPostSettings'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
@@ -8,7 +9,7 @@ export const useGetDetailSettings = (name: string, id: string) => {
       const { data } = await axios.get(
         `/api/settings/detail?name=${name}&id=${id}`,
       )
-      return data
+      return data as detailPostSettings
     },
   })
 }

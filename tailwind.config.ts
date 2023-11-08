@@ -24,6 +24,16 @@ module.exports = {
             '--tw-prose-bold': 'hsl(var(--foreground))',
             '--tw-prose-hr': 'hsl(var(--foreground))',
             '--tw-prose-code': 'hsl(var(--foreground))',
+            overflowWrap: 'break-word',
+            code: {
+              backgroundColor: 'hsl(var(--muted))',
+              padding: '0.25rem',
+              borderRadius: 'calc(var(--radius) - 2px)',
+            },
+            hr: {
+              marginTop: '1rem',
+              marginBottom: '1rem',
+            },
           },
         },
       },

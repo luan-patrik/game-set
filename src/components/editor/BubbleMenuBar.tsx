@@ -1,5 +1,4 @@
 import { type Editor } from '@tiptap/react'
-import { Button } from '../ui/button'
 import { Bold, Code2, FileMinus2, Italic, Strikethrough } from 'lucide-react'
 import ButtonMenuBar from './ButtonMenuBar'
 
@@ -11,9 +10,8 @@ const BubbleMenuBar = ({ editor }: BubbleMenuBarProps) => {
   return (
     <div
       id='parent'
-      className='flex flex-wrap items-center justify-center border-b bg-background p-2'
+      className='flex flex-wrap items-center justify-center text-ellipsis border-b bg-background p-2'
     >
-      <ButtonMenuBar>Text</ButtonMenuBar>
       <ButtonMenuBar
         onClick={() => editor.chain().focus().toggleBold().run()}
         title='Negrito'
@@ -37,8 +35,8 @@ const BubbleMenuBar = ({ editor }: BubbleMenuBarProps) => {
       </ButtonMenuBar>
       <ButtonMenuBar
         onClick={() => editor.chain().focus().setHorizontalRule().run()}
-        data-active={editor.isActive('horizontalRule')}
-        title='Linha horizontal'
+        data-active={editor.isActive('divider')}
+        title='Divisor'
       >
         <FileMinus2 className='h-4 w-4' />
       </ButtonMenuBar>

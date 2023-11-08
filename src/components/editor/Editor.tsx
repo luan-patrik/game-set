@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
@@ -14,6 +14,7 @@ import {
   FloatingMenu,
 } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import Placeholder from '@tiptap/extension-placeholder'
 import { PostCreationRequest, PostValidator } from '@/validators/post'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
@@ -43,7 +44,14 @@ const Editor = ({
 
   const editor = useEditor({
     autofocus: true,
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit,
+      Placeholder.configure({
+        placeholder: "Inicie colocando uma '/'",
+        emptyNodeClass:
+          'cursor-text before:content-[attr(data-placeholder)] before:absolute before:left-2 before:text-foreground/50 before-pointer-events-none',
+      }),
+    ],
     content: content,
     editorProps: {
       attributes: {
@@ -98,6 +106,9 @@ const Editor = ({
         {editor ? (
           <FloatingMenu
             editor={editor}
+            tippyOptions={{
+              placement: 'bottom-start',
+            }}
             shouldShow={({ state }) => {
               const { $from } = state.selection
 

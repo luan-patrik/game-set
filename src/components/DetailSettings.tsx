@@ -15,11 +15,11 @@ const DetailSettings = ({ name, id }: DetailSettingsProps) => {
 
   if (isLoading) return 'Loading...'
 
-  const clean = DOMPurify.sanitize(data?.content, {
+  if (!data) return notFound()
+
+  const clean = DOMPurify.sanitize(data.content, {
     USE_PROFILES: { html: true },
   })
-
-  if (!data) return notFound()
 
   return (
     <div className='py-4'>
