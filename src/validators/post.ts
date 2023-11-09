@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const PostValidator = z.object({
-  content: z.string().trim(),
+  content: z.string().trim().max(5000),
   isPrivate: z.boolean().default(false),
 })
 
