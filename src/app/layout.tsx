@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Providers from '@/components/Providers'
 import Navbar from '@/components/navbar/Navbar'
+import { EdgeStoreProvider } from '@/components/EdgeStoreProvider'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -27,8 +28,10 @@ export default function RootLayout({
     <html lang='pt-BR' className={inter.variable}>
       <body className='dark'>
         <Providers>
-          <Navbar />
-          <main className='container'>{children}</main>
+          <EdgeStoreProvider>
+            <Navbar />
+            <main className='container'>{children}</main>
+          </EdgeStoreProvider>
         </Providers>
       </body>
     </html>
