@@ -25,12 +25,12 @@ const UploadSettings = () => {
       return newFileStates
     })
   }
-
   return (
     <div className='flex w-full flex-col gap-2'>
       <MultiFileDropzone
         dropzoneOptions={{
           maxFiles: 5,
+          accept: { '.blk,.cfg,.in,.txt': [] },
           maxSize: 1024 * 128, //128KB,
         }}
         className='w-full'
@@ -52,8 +52,6 @@ const UploadSettings = () => {
                   onProgressChange: async (progress) => {
                     updateFileProgress(fileState.key, progress)
                     if (progress === 100) {
-                      // wait 1 second to set it to complete
-                      // so that the user can see the progress bar
                       await new Promise((resolve) => setTimeout(resolve, 1000))
                       updateFileProgress(fileState.key, 'COMPLETE')
                     }
