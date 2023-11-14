@@ -37,6 +37,9 @@ export async function GET(req: Request) {
         ],
         author: { name: name },
       },
+      include: {
+        filesettings: true,
+      },
     })
     return new NextResponse(JSON.stringify(data))
   } catch (error) {

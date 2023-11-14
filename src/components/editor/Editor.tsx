@@ -92,10 +92,7 @@ const Editor = ({
   }
 
   return (
-    <form
-      className='flex flex-col gap-2 py-4'
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <form className='flex flex-col gap-2' onSubmit={handleSubmit(onSubmit)}>
       <div>
         <EditorContent
           value={getValues('content')}
@@ -134,20 +131,36 @@ const Editor = ({
         control={control}
         name='isPrivate'
         render={({ field }) => (
-          <div className='flex items-center gap-2'>
-            <Checkbox
-              id='private'
-              {...register('isPrivate')}
-              checked={field.value}
-              onCheckedChange={field.onChange}
-            />
-            <label htmlFor='private' className='text-base'>
-              Configurações privadas
-            </label>
+          <div className='flex items-center justify-between '>
+            <div className='flex items-center gap-2'>
+              <Checkbox
+                id='private'
+                {...register('isPrivate')}
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+              <label htmlFor='private' className='text-base'>
+                Configurações privadas
+              </label>
+            </div>
+            <span
+              className={
+                getValues('content').replace(/<\/?[^>]+(>|$)/g, '').length >
+                5000
+                  ? 'text-red-500'
+                  : ''
+              }
+            >
+              {getValues('content').replace(/<\/?[^>]+(>|$)/g, '').length}
+            </span>
           </div>
         )}
       />
-      <Button disabled={isLoading} className='w-full' type='submit'>
+      <Button
+        disabled={isLoading}
+        className='w-full bg-ring text-foreground'
+        type='submit'
+      >
         {isLoading ? <Loader2 className='h-6 w-6 animate-spin' /> : 'Enviar'}
       </Button>
     </form>

@@ -28,7 +28,7 @@ export default async function gameSettingsPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <EditorOutput />
+        <EditorOutput />
     </HydrationBoundary>
   )
 }
