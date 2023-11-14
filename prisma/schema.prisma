@@ -41,29 +41,43 @@ model Session {
 }
 
 model User {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String?    @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  role          Role       @default(USER)
+  role          Role           @default(USER)
   settings      Settings[]
+  filesettings  FileSettings[]
 
   @@map("users")
 }
 
 model Settings {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  content   String
-  private   Boolean  @default(false)
-  authorId  String   @db.ObjectId
-  author    User     @relation(fields: [authorId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  content      String
+  private      Boolean        @default(false)
+  authorId     String         @db.ObjectId
+  author       User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  filesettings FileSettings[]
 
   @@map("settings")
+}
+
+model FileSettings {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  authorId   String   @db.ObjectId
+  fileUrl    String   @unique
+  filename   String
+  settingsId String   @db.ObjectId
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  settings   Settings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
+
+  @@map("filesettings")
 }
 
 enum Role {

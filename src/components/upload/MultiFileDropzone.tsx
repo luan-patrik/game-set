@@ -47,6 +47,11 @@ const ERROR_MESSAGES = {
   tooManyFiles(maxFiles: number) {
     return `Você só pode adicionar ${maxFiles} arquivo(s).`
   },
+  fileTooSmall(minSize: number) {
+    return `O arquivo é muito pequeno. O tamanho mínimo é ${formatFileSize(
+      minSize,
+    )}.`
+  },
   fileNotSupported() {
     return 'Arquivo não suportado.'
   },
@@ -125,6 +130,8 @@ const MultiFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
           return ERROR_MESSAGES.fileInvalidType()
         } else if (errors[0]?.code === 'too-many-files') {
           return ERROR_MESSAGES.tooManyFiles(dropzoneOptions?.maxFiles ?? 0)
+        } else if (errors[0]?.code === 'file-too-small') {
+          return ERROR_MESSAGES.fileTooSmall(dropzoneOptions?.minSize ?? 0)
         } else {
           return ERROR_MESSAGES.fileNotSupported()
         }

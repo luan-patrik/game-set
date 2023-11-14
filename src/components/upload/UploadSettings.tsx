@@ -1,18 +1,19 @@
 'use client'
 
 import { useState } from 'react'
-import { useEdgeStore } from './EdgeStoreProvider'
+import { useEdgeStore } from '../EdgeStoreProvider'
 import { type FileState, MultiFileDropzone } from './MultiFileDropzone'
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
+import axios from 'axios'
+import { useMutation } from '@tanstack/react-query'
+import { UploadCreationRequest } from '@/validators/upload'
 
-const UploadSettings = () => {
+interface UploadSettingsProps {
+  settingsId: string
+}
+
+const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
   const [fileStates, setFileStates] = useState<FileState[]>([])
-  const [uploadRes, setUploadRes] = useState<
-    {
-      url: string
-      filename: string
-    }[]
-  >([])
   const { edgestore } = useEdgeStore()
 
   function updateFileProgress(key: string, progress: FileState['progress']) {
@@ -25,12 +26,30 @@ const UploadSettings = () => {
       return newFileStates
     })
   }
+
+  const { mutate: create } = useMutation({
+    mutationFn: async ({
+      fileUrl,
+      filename,
+      settingsId,
+    }: UploadCreationRequest) => {
+      const payload: UploadCreationRequest = {
+        fileUrl,
+        filename,
+        settingsId: settingsId,
+      }
+      const { data } = await axios.post(`/api/settings/upload`, payload)
+      return data
+    },
+  })
+
   return (
     <div className='flex w-full flex-col gap-2'>
       <MultiFileDropzone
         dropzoneOptions={{
           maxFiles: 5,
-          accept: { '.blk,.cfg,.in,.txt': [] },
+          accept: { '.blk,.cfg,.ini,.txt': [] },
+          minSize: 1, // 1Byte
           maxSize: 1024 * 128, //128KB,
         }}
         className='w-full'
@@ -49,6 +68,7 @@ const UploadSettings = () => {
                 if (fileState.progress !== 'PENDING') return
                 const res = await edgestore.publicFiles.upload({
                   file: fileState.file,
+                  input: { type: 'post' },
                   onProgressChange: async (progress) => {
                     updateFileProgress(fileState.key, progress)
                     if (progress === 100) {
@@ -57,13 +77,11 @@ const UploadSettings = () => {
                     }
                   },
                 })
-                setUploadRes((uploadRes) => [
-                  ...uploadRes,
-                  {
-                    url: res.url,
-                    filename: fileState.file.name,
-                  },
-                ])
+                create({
+                  fileUrl: res.url,
+                  filename: fileState.file.name,
+                  settingsId: settingsId,
+                })
               } catch (err) {
                 updateFileProgress(fileState.key, 'ERROR')
               }
@@ -77,21 +95,6 @@ const UploadSettings = () => {
       >
         Upload
       </Button>
-      {uploadRes.length > 0 && (
-        <div className='mt-2'>
-          {uploadRes.map((res) => (
-            <a
-              key={res.url}
-              className='mt-2 block underline'
-              href={res.url}
-              target='_blank'
-              rel='noopener noreferrer'
-            >
-              {res.filename}
-            </a>
-          ))}
-        </div>
-      )}
     </div>
   )
 }

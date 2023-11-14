@@ -28,10 +28,8 @@ export default function RootLayout({
     <html lang='pt-BR' className={inter.variable}>
       <body className='dark'>
         <Providers>
-          <EdgeStoreProvider>
-            <Navbar />
-            <main className='container'>{children}</main>
-          </EdgeStoreProvider>
+          <Navbar />
+          <main className='container'>{children}</main>
         </Providers>
       </body>
     </html>

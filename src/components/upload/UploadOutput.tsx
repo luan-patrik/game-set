@@ -1,21 +1,18 @@
 'use client'
 
 import { useGetUserPostSettings } from '@/hooks/use-get-user-post-settings'
-import Editor from './Editor'
+import UploadSettings from './UploadSettings'
 
-const EditorOutput = () => {
+const UploadOutput = () => {
   const { data, isLoading } = useGetUserPostSettings()
 
   if (isLoading) return 'Loading...'
 
   return (
     <div className='py-4'>
-      <Editor
-        content={data?.content || ''}
-        isPrivate={data?.private || false}
-      />
+      <UploadSettings settingsId={data?.id || ''} />
     </div>
   )
 }
 
-export default EditorOutput
+export default UploadOutput
