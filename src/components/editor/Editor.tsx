@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
@@ -73,8 +73,7 @@ const Editor = ({
       return data
     },
     onSuccess() {
-      queryClient.refetchQueries({ queryKey: ['user'] })
-      queryClient.refetchQueries({ queryKey: ['detail'] })
+      queryClient.invalidateQueries()
       router.push('/')
     },
     onError() {

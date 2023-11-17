@@ -28,7 +28,10 @@ const UserMenu = ({ user }: UserMenuProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
         <DropdownMenuItem asChild>
-          <Link href={'/game-settings'}>Minhas configurações</Link>
+          <Link href={'/upload-settings'}>Enviar configurações</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={'/edit-settings'}>Criar configurações</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

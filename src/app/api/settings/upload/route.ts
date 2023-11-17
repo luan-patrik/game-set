@@ -1,11 +1,9 @@
 import { auth } from '@/lib/auth'
 import prisma from '@/lib/db'
-import { PostValidator } from '@/validators/post'
 import { UploadValidator } from '@/validators/upload'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
-  console.log('passou aqui')
   try {
     const session = await auth()
 
@@ -17,17 +15,37 @@ export async function POST(req: Request) {
 
     const { fileUrl, filename, settingsId } = UploadValidator.parse(body)
 
-    let settings = await prisma.settings.findFirst({
+    const settings = await prisma.settings.findFirst({
       where: {
         authorId: session.user.id,
       },
     })
 
+    const fileCount = await prisma.fileSettings.count({
+      where: {
+        authorId: session.user.id,
+      },
+    })
+
+    if (fileCount >= 10) {
+      console.log(fileCount)
+      return new NextResponse('Exceeded upload limit', { status: 429 })
+    }
+
     if (!settings) {
-      settings = await prisma.settings.create({
+      const createSettings = await prisma.settings.create({
         data: {
           authorId: session.user.id,
           content: '',
+        },
+      })
+
+      await prisma.fileSettings.create({
+        data: {
+          fileUrl,
+          settingsId: createSettings.id,
+          filename,
+          authorId: session.user.id,
         },
       })
     }
@@ -35,13 +53,13 @@ export async function POST(req: Request) {
     await prisma.fileSettings.create({
       data: {
         fileUrl,
-        settingsId: settings.id || settingsId,
+        settingsId: settingsId,
         filename,
         authorId: session.user.id,
       },
     })
 
-    return new NextResponse('pload completed successfully.', { status: 201 })
+    return new NextResponse('Upload completed successfully.', { status: 201 })
   } catch (error) {
     return new NextResponse('', { status: 500 })
   }
