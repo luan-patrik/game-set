@@ -11,23 +11,27 @@ const Home = () => {
   if (isLoading) return 'Loading...'
 
   return (
-    <div className='mx-auto grid grid-cols-1 place-items-center gap-4 py-4 sm:grid-cols-2  md:grid-cols-3'>
+    <div className='mx-auto grid grid-cols-1 place-items-center gap-4 py-4 sm:grid-cols-2 md:grid-cols-3'>
       {data &&
         data.map((item) => (
-          <Link key={item.id} href={`/settings/${item.author.name}/${item.id}`}>
-            <Card className='max-w-[18rem]'>
-              <CardContent className='flex flex-col items-center justify-center space-y-4 px-2 py-10'>
+          <Link
+            key={item.id}
+            href={`/settings/${item.author.name}/${item.id}`}
+            className='flex w-full max-w-[18rem] justify-center'
+          >
+            <Card className=' overflow-hidden'>
+              <div className='flex w-full min-w-0 flex-col items-center justify-center space-y-4 overflow-hidden overflow-ellipsis whitespace-nowrap px-2 py-10 text-center'>
                 <Image
                   alt={`Avatar de ${item.author.name}`}
                   src={item.author.image}
                   priority
                   quality={100}
-                  className='select-none rounded-full'
+                  className='aspect-square select-none rounded-full'
                   width={224}
                   height={224}
                 />
-                <p className='text-xl font-semibold'>{item.author.name}</p>
-              </CardContent>
+                <p className='text-ellipsis overflow-hidden whitespace-nowrap w-full'>{item.author.name}</p>
+              </div>
             </Card>
           </Link>
         ))}

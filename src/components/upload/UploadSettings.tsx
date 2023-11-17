@@ -1,20 +1,22 @@
 'use client'
 
 import { useState } from 'react'
+import axios from 'axios'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { UploadCreationRequest } from '@/validators/upload'
 import { useEdgeStore } from '../EdgeStoreProvider'
 import { type FileState, MultiFileDropzone } from './MultiFileDropzone'
 import { Button } from '../ui/button'
-import axios from 'axios'
-import { useMutation } from '@tanstack/react-query'
-import { UploadCreationRequest } from '@/validators/upload'
 
 interface UploadSettingsProps {
   settingsId: string
 }
 
 const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
+  const queryClient = useQueryClient()
   const [fileStates, setFileStates] = useState<FileState[]>([])
-  const { edgestore } = useEdgeStore()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const { edgestore, reset } = useEdgeStore()
 
   function updateFileProgress(key: string, progress: FileState['progress']) {
     setFileStates((fileStates) => {
@@ -41,7 +43,42 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
       const { data } = await axios.post(`/api/settings/upload`, payload)
       return data
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries()
+    },
   })
+
+  const onSubmit = async () => {
+    setIsLoading(true)
+    await reset()
+    await Promise.all(
+      fileStates.map(async (fileState) => {
+        if (fileState.progress !== 'PENDING') return
+        try {
+          const res = await edgestore.publicFiles.upload({
+            file: fileState.file,
+            input: { type: 'post' },
+            onProgressChange: async (progress) => {
+              updateFileProgress(fileState.key, progress)
+              if (progress === 100) {
+                await new Promise((resolve) => setTimeout(resolve, 1000))
+                updateFileProgress(fileState.key, 'COMPLETE')
+              }
+            },
+          })
+          create({
+            fileUrl: res.url,
+            filename: fileState.file.name,
+            settingsId: settingsId,
+          })
+        } catch (error) {
+          updateFileProgress(fileState.key, 'ERROR')
+        } finally {
+          setIsLoading(false)
+        }
+      }),
+    )
+  }
 
   return (
     <div className='flex w-full flex-col gap-2'>
@@ -55,40 +92,15 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
         className='w-full'
         value={fileStates}
         onChange={setFileStates}
-        onFilesAdded={async (addedFiles) => {
+        onFilesAdded={(addedFiles) => {
           setFileStates([...fileStates, ...addedFiles])
         }}
       />
       <Button
         className='w-full bg-ring text-foreground'
-        onClick={async () => {
-          await Promise.all(
-            fileStates.map(async (fileState) => {
-              try {
-                if (fileState.progress !== 'PENDING') return
-                const res = await edgestore.publicFiles.upload({
-                  file: fileState.file,
-                  input: { type: 'post' },
-                  onProgressChange: async (progress) => {
-                    updateFileProgress(fileState.key, progress)
-                    if (progress === 100) {
-                      await new Promise((resolve) => setTimeout(resolve, 1000))
-                      updateFileProgress(fileState.key, 'COMPLETE')
-                    }
-                  },
-                })
-                create({
-                  fileUrl: res.url,
-                  filename: fileState.file.name,
-                  settingsId: settingsId,
-                })
-              } catch (err) {
-                updateFileProgress(fileState.key, 'ERROR')
-              }
-            }),
-          )
-        }}
+        onClick={onSubmit}
         disabled={
+          isLoading ||
           !fileStates.filter((fileState) => fileState.progress === 'PENDING')
             .length
         }
