@@ -1,7 +1,7 @@
 'use client'
 
 import { notFound } from 'next/navigation'
-import { sanitize } from 'dompurify'
+import DOMpurify from 'dompurify'
 import { useGetDetailSettings } from '@/hooks/use-get-detail-post-settings'
 import { Card, CardContent } from './ui/card'
 import DetailUploadedSettings from './DetailUploadedSettings'
@@ -18,7 +18,7 @@ const DetailSettings = ({ name, id }: DetailSettingsProps) => {
 
   if (!data) return notFound()
 
-  const clean = sanitize(data.content, {
+  const clean = DOMpurify.sanitize(data.content, {
     USE_PROFILES: { html: true },
   })
 
@@ -27,7 +27,7 @@ const DetailSettings = ({ name, id }: DetailSettingsProps) => {
       <div className='grid grid-cols-1 place-items-center gap-4 sm:grid-cols-2 md:grid-cols-3'>
         {data.filesettings.map((item) => (
           <DetailUploadedSettings
-          key={item.id}
+            key={item.id}
             size={item.size}
             fileUrl={item.fileUrl}
             authorId={item.authorId}

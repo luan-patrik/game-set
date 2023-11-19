@@ -24,7 +24,6 @@ interface DetailUploadedSettingsProps {
   authorId: string
   fileUrl: string
   size: number
-  settingsId: string
 }
 
 const DetailUploadedSettings = ({
@@ -33,7 +32,6 @@ const DetailUploadedSettings = ({
   authorId,
   fileUrl,
   size,
-  settingsId,
 }: DetailUploadedSettingsProps) => {
   const { data: session } = useSession()
   const queryClient = useQueryClient()
@@ -58,19 +56,16 @@ const DetailUploadedSettings = ({
 
   const onDelete = async () => {
     try {
-      // await edgestore.publicFiles.delete({
-      //   url: fileUrl,
-      // })
-
-      deleteFile({
-        id,
-        fileUrl,
-      })
-
-      console.log('Arquivo excluído com sucesso.')
-    } catch (error) {
-      console.error('Erro ao excluir o arquivo:', error)
-    }
+      await Promise.all([
+        await edgestore.publicFiles.delete({
+          url: fileUrl,
+        }),
+        deleteFile({
+          id,
+          fileUrl,
+        }),
+      ])
+    } catch (error) {}
   }
 
   return (
