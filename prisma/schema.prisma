@@ -72,7 +72,8 @@ model FileSettings {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   authorId   String   @db.ObjectId
   fileUrl    String   @unique
-  filename   String
+  name       String
+  size       Int
   settingsId String   @db.ObjectId
   author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   settings   Settings @relation(fields: [settingsId], references: [id], onDelete: Cascade)

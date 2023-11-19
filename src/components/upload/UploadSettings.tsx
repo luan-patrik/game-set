@@ -16,7 +16,7 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
   const queryClient = useQueryClient()
   const [fileStates, setFileStates] = useState<FileState[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const { edgestore, reset } = useEdgeStore()
+  const { edgestore } = useEdgeStore()
 
   function updateFileProgress(key: string, progress: FileState['progress']) {
     setFileStates((fileStates) => {
@@ -32,12 +32,14 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
   const { mutate: create } = useMutation({
     mutationFn: async ({
       fileUrl,
-      filename,
+      name,
+      size,
       settingsId,
     }: UploadCreationRequest) => {
       const payload: UploadCreationRequest = {
         fileUrl,
-        filename,
+        name,
+        size,
         settingsId: settingsId,
       }
       const { data } = await axios.post(`/api/settings/upload`, payload)
@@ -50,7 +52,6 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
 
   const onSubmit = async () => {
     setIsLoading(true)
-    await reset()
     await Promise.all(
       fileStates.map(async (fileState) => {
         if (fileState.progress !== 'PENDING') return
@@ -68,7 +69,8 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
           })
           create({
             fileUrl: res.url,
-            filename: fileState.file.name,
+            name: fileState.file.name,
+            size: fileState.file.size,
             settingsId: settingsId,
           })
         } catch (error) {
@@ -84,7 +86,7 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
     <div className='flex w-full flex-col gap-2'>
       <MultiFileDropzone
         dropzoneOptions={{
-          maxFiles: 5,
+          maxFiles: 12,
           accept: { '.blk,.cfg,.ini,.txt': [] },
           minSize: 1, // 1Byte
           maxSize: 1024 * 128, //128KB,
