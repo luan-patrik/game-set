@@ -1,7 +1,8 @@
-import { auth } from '@/lib/auth'
 import { initEdgeStore } from '@edgestore/server'
 import { createEdgeStoreNextHandler } from '@edgestore/server/adapters/next/app'
 import { z } from 'zod'
+import prisma from '@/lib/db'
+import { auth } from '@/lib/auth'
 type Context = {
   userId: string | undefined
 }
@@ -27,11 +28,27 @@ const edgeStoreRouter = es.router({
     .fileBucket({
       maxSize: 1024 * 128, // 128KB
     })
-    .beforeUpload(({ ctx }) => {
-      if (ctx.userId) {
-        return true
-      }
-      return false
+    .beforeUpload(async () => {
+      const session = await auth()
+
+      if (!session) throw new Error('Faça login para fazer upload')
+
+      const fileCount = await prisma.fileSettings.count({
+        where: {
+          authorId: session.user.id,
+        },
+      })
+
+      if (fileCount >= 12) throw new Error('Max uploads exceeded')
+
+      return true
+    })
+    .beforeDelete(async () => {
+      const session = await auth()
+
+      if (!session) throw new Error('Faça login para deletar')
+
+      return true
     })
     .input(
       z.object({

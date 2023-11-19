@@ -1,6 +1,6 @@
 import { auth } from '@/lib/auth'
 import prisma from '@/lib/db'
-import { UploadValidator } from '@/validators/upload'
+import { DeleteUploadValidator, UploadValidator } from '@/validators/upload'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       return new NextResponse('Unauthorized.', { status: 401 })
     }
 
-    const { fileUrl, filename, settingsId } = UploadValidator.parse(body)
+    const { name, fileUrl, size, settingsId } = UploadValidator.parse(body)
 
     const settings = await prisma.settings.findFirst({
       where: {
@@ -27,8 +27,7 @@ export async function POST(req: Request) {
       },
     })
 
-    if (fileCount >= 10) {
-      console.log(fileCount)
+    if (fileCount >= 12) {
       return new NextResponse('Exceeded upload limit', { status: 429 })
     }
 
@@ -42,9 +41,10 @@ export async function POST(req: Request) {
 
       await prisma.fileSettings.create({
         data: {
-          fileUrl,
+          name,
           settingsId: createSettings.id,
-          filename,
+          fileUrl,
+          size,
           authorId: session.user.id,
         },
       })
@@ -52,15 +52,41 @@ export async function POST(req: Request) {
 
     await prisma.fileSettings.create({
       data: {
+        name,
         fileUrl,
+        size,
         settingsId: settingsId,
-        filename,
         authorId: session.user.id,
       },
     })
 
     return new NextResponse('Upload completed successfully.', { status: 201 })
   } catch (error) {
-    return new NextResponse('', { status: 500 })
+    return new NextResponse(JSON.stringify(error), { status: 500 })
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await auth()
+
+    if (!session) {
+      return new NextResponse('Unauthorized.', { status: 401 })
+    }
+
+    const body = await req.json()
+
+    const { id, fileUrl } = DeleteUploadValidator.parse(body)
+
+    await prisma.fileSettings.delete({
+      where: {
+        authorId: session.user.id,
+        id,
+        fileUrl,
+      },
+    })
+    return new NextResponse('File deleted successfully.', { status: 200 })
+  } catch (error) {
+    return new NextResponse(JSON.stringify(error), { status: 500 })
   }
 }
