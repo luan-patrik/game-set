@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: 'Home - GameSet',
   description: 'Guardar configurações de jogos.',
   icons: {
-    icon: '/assets/logo.jpg',
+    icon: '/assets/logo.webp',
   },
 }
 

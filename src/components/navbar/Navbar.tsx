@@ -14,7 +14,7 @@ const Navbar = async () => {
       <nav className='container flex items-center justify-between'>
         <Link href='/'>
           <Image
-            src='/assets/logo.jpg'
+            src='/assets/logo.webp'
             alt='logo'
             priority
             width={50}
