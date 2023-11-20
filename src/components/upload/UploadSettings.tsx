@@ -89,7 +89,7 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
           maxFiles: 12,
           accept: { '.blk,.cfg,.ini,.txt': [] },
           minSize: 1, // 1Byte
-          maxSize: 1024 * 128, //128KB,
+          maxSize: 1024 * 128, //128KB
         }}
         className='w-full'
         value={fileStates}
@@ -99,7 +99,8 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
         }}
       />
       <Button
-        className='w-full bg-ring text-foreground'
+        className='w-full'
+        variant='outline'
         onClick={onSubmit}
         disabled={
           isLoading ||
@@ -107,7 +108,7 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
             .length
         }
       >
-        Upload
+        Enviar
       </Button>
     </div>
   )

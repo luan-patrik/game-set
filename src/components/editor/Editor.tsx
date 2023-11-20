@@ -59,7 +59,9 @@ const Editor = ({
       },
     },
     onUpdate: ({ editor }) => {
-      setValue('content', editor.getHTML())
+      editor.isEmpty
+        ? setValue('content', '')
+        : setValue('content', editor.getHTML())
     },
   })
 
@@ -157,7 +159,8 @@ const Editor = ({
       />
       <Button
         disabled={isLoading}
-        className='w-full bg-ring text-foreground'
+        variant='outline'
+        className='w-full'
         type='submit'
       >
         {isLoading ? <Loader2 className='h-6 w-6 animate-spin' /> : 'Enviar'}
