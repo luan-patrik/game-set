@@ -10,8 +10,11 @@ import {
   CardTitle,
 } from './ui/card'
 import { useToast } from './ui/use-toast'
+import { XIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 const UserAuthForm = () => {
+  const router = useRouter()
   const { toast } = useToast()
 
   const signInWithGoogle = async () => {
@@ -41,7 +44,19 @@ const UserAuthForm = () => {
   return (
     <div className='fixed inset-0 z-50 bg-background'>
       <form className='container flex h-full items-center justify-center'>
-        <Card>
+        <Card className='relative'>
+          <Button
+            onClick={() => router.push('/')}
+            type='button'
+            title='Voltar ao início.'
+            aria-label='Voltar para o início.'
+            size='icon'
+            variant='ghost'
+            className='absolute right-2 top-2'
+          >
+            <XIcon className='h-[1.2rem] w-[1.2rem]' />
+            <span className='sr-only'>Voltar para o início.</span>
+          </Button>
           <CardHeader>
             <CardTitle className='font-bold'>Entrar</CardTitle>
             <CardDescription className='text-base'>

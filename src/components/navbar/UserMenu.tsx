@@ -1,6 +1,6 @@
 'use client'
 
-import { User } from 'next-auth'
+import { Session, User } from 'next-auth'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,12 +12,14 @@ import UserAvatar from './UserAvatar'
 import { HTMLAttributes } from 'react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
+import SwitchTheme from '../SwitchTheme'
 
 interface UserMenuProps extends HTMLAttributes<HTMLDivElement> {
   user: Pick<User, 'image'>
+  session: Session | null
 }
 
-const UserMenu = ({ user }: UserMenuProps) => {
+const UserMenu = ({ user, session }: UserMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -33,6 +35,8 @@ const UserMenu = ({ user }: UserMenuProps) => {
         <DropdownMenuItem asChild>
           <Link href={'/edit-settings'}>Criar configurações</Link>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <SwitchTheme session={session} />
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className='font-bold'
