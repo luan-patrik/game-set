@@ -4,6 +4,7 @@ import { buttonVariants } from '../ui/button'
 import { auth } from '@/lib/auth'
 import UserMenu from './UserMenu'
 import { getServerSession } from 'next-auth'
+import SwitchTheme from '../SwitchTheme'
 
 const Navbar = async () => {
   const session = await auth()
@@ -21,14 +22,17 @@ const Navbar = async () => {
           />
         </Link>
         {session?.user ? (
-          <UserMenu user={session.user} />
+          <UserMenu user={session.user} session={session} />
         ) : (
-          <Link
-            className={buttonVariants({ variant: 'outline' })}
-            href='/sign-in'
-          >
-            Entrar
-          </Link>
+          <div className='flex items-center gap-4'>
+            <SwitchTheme session={session} />
+            <Link
+              className={buttonVariants({ variant: 'outline' })}
+              href='/sign-in'
+            >
+              Entrar
+            </Link>
+          </div>
         )}
       </nav>
     </header>
