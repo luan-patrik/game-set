@@ -16,7 +16,6 @@ export const DetailSettings = ({ name, id }: DetailSettingsProps) => {
 
   if (!data) return notFound()
 
-  console.log(data)
 
   return (
     <div className='flex flex-col gap-4 py-4'>
@@ -25,10 +24,12 @@ export const DetailSettings = ({ name, id }: DetailSettingsProps) => {
           <DetailUploadedSettings
             key={item.id}
             size={item.size}
+            private={item.private}
             fileUrl={item.fileUrl}
             authorId={item.authorId}
             name={item.name}
             id={item.id}
+            createdAt={item.createdAt}
           />
         ))}
       </div>

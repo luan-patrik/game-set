@@ -1,4 +1,4 @@
-import {DetailSettings} from '@/components/DetailSettings'
+import { DetailSettings } from '@/components/DetailSettings'
 
 interface SettingsPageProps {
   params: {

@@ -8,7 +8,7 @@ export async function GET() {
 
     if (!session) return new NextResponse('Unauthorized', { status: 401 })
 
-    const data = await prisma.settings.findFirst({
+    const data = await prisma.fileSettings.findFirst({
       where: {
         authorId: session.user.id,
       },

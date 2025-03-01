@@ -9,7 +9,7 @@ export const Navbar = async () => {
   const session = await auth()
 
   return (
-    <header className='sticky inset-x-0 top-0 z-40 border-b bg-background py-2'>
+    <header className='bg-background sticky inset-x-0 top-0 z-40 border-b py-2'>
       <nav className='container flex items-center justify-between'>
         <Link href='/'>
           <Image

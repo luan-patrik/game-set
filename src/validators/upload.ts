@@ -4,7 +4,7 @@ export const UploadValidator = z.object({
   name: z.string(),
   fileUrl: z.string().url(),
   size: z.number(),
-  settingsId: z.string(),
+  private: z.boolean().default(false),
 })
 
 export const DeleteUploadValidator = z.object({

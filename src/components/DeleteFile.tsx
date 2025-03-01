@@ -29,9 +29,6 @@ export const DeleteFile = ({ id, fileUrl }: DeleteFileProps) => {
     onSuccess: () => {
       queryClient.invalidateQueries()
     },
-    onSettled: () => {
-      console.log('OnSettled')
-    },
   })
 
   const onDelete = async () => {
@@ -49,7 +46,7 @@ export const DeleteFile = ({ id, fileUrl }: DeleteFileProps) => {
   }
 
   return (
-    <DropdownMenuItem className='font-bold text-destructive' asChild>
+    <DropdownMenuItem className='text-destructive font-bold' asChild>
       <button className='w-full cursor-pointer' onClick={onDelete}>
         Deletar
       </button>

@@ -17,13 +17,12 @@ export async function POST(req: Request) {
       return new NextResponse('Unauthorized.', { status: 401 })
     }
 
-    const { name, fileUrl, size, settingsId } = UploadValidator.parse(body)
-
-    const settings = await prisma.settings.findFirst({
-      where: {
-        authorId: session.user.id,
-      },
-    })
+    const {
+      name,
+      fileUrl,
+      size,
+      private: isPrivate,
+    } = UploadValidator.parse(body)
 
     const fileCount = await prisma.fileSettings.count({
       where: {
@@ -35,30 +34,12 @@ export async function POST(req: Request) {
       return new NextResponse('Exceeded upload limit', { status: 429 })
     }
 
-    if (!settings) {
-      const createSettings = await prisma.settings.create({
-        data: {
-          authorId: session.user.id,
-        },
-      })
-
-      await prisma.fileSettings.create({
-        data: {
-          name,
-          settingsId: createSettings.id,
-          fileUrl,
-          size,
-          authorId: session.user.id,
-        },
-      })
-    }
-
     await prisma.fileSettings.create({
       data: {
         name,
         fileUrl,
+        private: isPrivate,
         size,
-        settingsId: settingsId,
         authorId: session.user.id,
       },
     })
@@ -104,7 +85,7 @@ export async function PUT(req: Request) {
 
     const body = await req.json()
 
-    const { id, isPrivate } = ChangeUploadVisibility.parse(body)
+    const { id, isPrivate } = ChangeUploadVisibility.parse(body.data)
 
     await prisma.fileSettings.update({
       where: {

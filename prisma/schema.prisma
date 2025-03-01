@@ -35,45 +35,42 @@ model Session {
   sessionToken String   @unique
   userId       String   @db.ObjectId
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
 }
 
 model User {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String?        @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  role          Role           @default(USER)
-  settings      Settings[]
-  filesettings  FileSettings[]
+  role          Role      @default(USER)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  filesettings FileSettings[]
 
   @@map("users")
 }
 
-model Settings {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  authorId     String         @db.ObjectId
-  author       User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  filesettings FileSettings[]
-
-  @@map("settings")
-}
-
 model FileSettings {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  authorId   String   @db.ObjectId
-  fileUrl    String   @unique
-  name       String
-  size       Int
-  private    Boolean  @default(false)
-  settingsId String   @db.ObjectId
-  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  settings   Settings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  authorId String  @db.ObjectId
+  fileUrl  String  @unique
+  name     String
+  size     Int
+  private  Boolean @default(false)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@map("filesettings")
 }

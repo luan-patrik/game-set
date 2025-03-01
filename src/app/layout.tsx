@@ -1,7 +1,6 @@
 import { Navbar } from '@/components/navbar/Navbar'
 import { Providers } from '@/components/providers/Providers'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
-import { Toaster } from '@/components/ui/toaster'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -38,7 +37,6 @@ export default function RootLayout({
           >
             <Navbar />
             <main className='container'>{children}</main>
-            <Toaster />
           </ThemeProvider>
         </Providers>
       </body>
