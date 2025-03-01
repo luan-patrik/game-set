@@ -12,5 +12,13 @@ export const DeleteUploadValidator = z.object({
   fileUrl: z.string().url(),
 })
 
+export const ChangeUploadVisibility = z.object({
+  id: z.string(),
+  isPrivate: z.boolean().default(false),
+})
+
 export type UploadCreationRequest = z.infer<typeof UploadValidator>
 export type UploadDeleteRequest = z.infer<typeof DeleteUploadValidator>
+export type UploadChangeVisibilityRequest = z.infer<
+  typeof ChangeUploadVisibility
+>

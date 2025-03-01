@@ -1,26 +1,22 @@
 'use client'
 
-import { notFound } from 'next/navigation'
-import DOMpurify from 'dompurify'
 import { useGetDetailSettings } from '@/hooks/use-get-detail-post-settings'
-import { Card, CardContent } from './ui/card'
-import DetailUploadedSettings from './DetailUploadedSettings'
+import { notFound } from 'next/navigation'
+import { DetailUploadedSettings } from './DetailUploadedSettings'
 
 interface DetailSettingsProps {
   name: string
   id: string
 }
 
-const DetailSettings = ({ name, id }: DetailSettingsProps) => {
+export const DetailSettings = ({ name, id }: DetailSettingsProps) => {
   const { data, isLoading } = useGetDetailSettings(name, id)
 
   if (isLoading) return 'Loading...'
 
   if (!data) return notFound()
 
-  const clean = DOMpurify.sanitize(data.content, {
-    USE_PROFILES: { html: true },
-  })
+  console.log(data)
 
   return (
     <div className='flex flex-col gap-4 py-4'>
@@ -36,17 +32,6 @@ const DetailSettings = ({ name, id }: DetailSettingsProps) => {
           />
         ))}
       </div>
-
-      {data.content !== '' ? (
-        <Card className='container prose w-full'>
-          <CardContent
-            className='p-2'
-            dangerouslySetInnerHTML={{ __html: clean }}
-          ></CardContent>
-        </Card>
-      ) : null}
     </div>
   )
 }
-
-export default DetailSettings

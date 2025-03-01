@@ -1,6 +1,8 @@
 'use client'
 
+import { XIcon } from 'lucide-react'
 import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { Button } from './ui/button'
 import {
   Card,
@@ -10,10 +12,8 @@ import {
   CardTitle,
 } from './ui/card'
 import { useToast } from './ui/use-toast'
-import { XIcon } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 
-const UserAuthForm = () => {
+export const UserAuthForm = () => {
   const router = useRouter()
   const { toast } = useToast()
 
@@ -86,5 +86,3 @@ const UserAuthForm = () => {
     </div>
   )
 }
-
-export default UserAuthForm

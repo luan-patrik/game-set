@@ -57,12 +57,8 @@ model User {
 
 model Settings {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  content      String
-  private      Boolean        @default(false)
   authorId     String         @db.ObjectId
   author       User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
   filesettings FileSettings[]
 
   @@map("settings")
@@ -74,6 +70,7 @@ model FileSettings {
   fileUrl    String   @unique
   name       String
   size       Int
+  private    Boolean  @default(false)
   settingsId String   @db.ObjectId
   author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   settings   Settings @relation(fields: [settingsId], references: [id], onDelete: Cascade)

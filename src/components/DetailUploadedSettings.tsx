@@ -1,22 +1,24 @@
 'use client'
 
+import { cn } from '@/lib/utils'
+import { UploadChangeVisibilityRequest } from '@/validators/upload'
 import { formatFileSize, getDownloadUrl } from '@edgestore/react/utils'
+import { useMutation } from '@tanstack/react-query'
+import axios from 'axios'
+import { MoreVertical } from 'lucide-react'
+import { useSession } from 'next-auth/react'
+import Link from 'next/link'
+import { MouseEvent } from 'react'
+import { DeleteFile } from './DeleteFile'
+import { buttonVariants } from './ui/button'
 import { Card, CardContent } from './ui/card'
+import { Checkbox } from './ui/checkbox'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
-import Link from 'next/link'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from './ui/button'
-import { MoreVertical } from 'lucide-react'
-import { useSession } from 'next-auth/react'
-import { useEdgeStore } from './EdgeStoreProvider'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import axios from 'axios'
-import { UploadDeleteRequest } from '@/validators/upload'
 
 interface DetailUploadedSettingsProps {
   id: string
@@ -26,7 +28,7 @@ interface DetailUploadedSettingsProps {
   size: number
 }
 
-const DetailUploadedSettings = ({
+export const DetailUploadedSettings = ({
   id,
   name,
   authorId,
@@ -34,39 +36,20 @@ const DetailUploadedSettings = ({
   size,
 }: DetailUploadedSettingsProps) => {
   const { data: session } = useSession()
-  const queryClient = useQueryClient()
-  const { edgestore } = useEdgeStore()
 
-  const { mutate: deleteFile } = useMutation({
-    mutationFn: async ({ id, fileUrl }: UploadDeleteRequest) => {
-      const payload: UploadDeleteRequest = {
+  const { mutate: privateFile } = useMutation({
+    mutationFn: async ({ id }: UploadChangeVisibilityRequest) => {
+      const payload: UploadChangeVisibilityRequest = {
         id,
-        fileUrl,
+        isPrivate: true,
       }
 
-      const { data } = await axios.delete('/api/settings/upload', {
+      const { data } = await axios.put('/api/settings/upload', {
         data: payload,
       })
       return data
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries()
-    },
   })
-
-  const onDelete = async () => {
-    try {
-      await Promise.all([
-        await edgestore.publicFiles.delete({
-          url: fileUrl,
-        }),
-        deleteFile({
-          id,
-          fileUrl,
-        }),
-      ])
-    } catch (error) {}
-  }
 
   return (
     <Card
@@ -86,10 +69,20 @@ const DetailUploadedSettings = ({
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end'>
-              <DropdownMenuItem className='font-bold text-destructive' asChild>
-                <button className='w-full cursor-pointer' onClick={onDelete}>
-                  Deletar
-                </button>
+              <DeleteFile id={id} fileUrl={fileUrl} />
+              <DropdownMenuItem className='gap-x-0.5 font-bold' asChild>
+                <div>
+                  <Checkbox
+                    onClick={(e: MouseEvent) => {
+                      e.preventDefault()
+                      privateFile({
+                        id,
+                        isPrivate: true,
+                      })
+                    }}
+                  />
+                  Privado
+                </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -104,5 +97,3 @@ const DetailUploadedSettings = ({
     </Card>
   )
 }
-
-export default DetailUploadedSettings

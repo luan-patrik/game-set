@@ -1,6 +1,10 @@
 import { auth } from '@/lib/auth'
 import prisma from '@/lib/db'
-import { DeleteUploadValidator, UploadValidator } from '@/validators/upload'
+import {
+  ChangeUploadVisibility,
+  DeleteUploadValidator,
+  UploadValidator,
+} from '@/validators/upload'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
@@ -35,7 +39,6 @@ export async function POST(req: Request) {
       const createSettings = await prisma.settings.create({
         data: {
           authorId: session.user.id,
-          content: '',
         },
       })
 
@@ -86,6 +89,35 @@ export async function DELETE(req: Request) {
       },
     })
     return new NextResponse('File deleted successfully.', { status: 200 })
+  } catch (error) {
+    return new NextResponse(JSON.stringify(error), { status: 500 })
+  }
+}
+
+export async function PUT(req: Request) {
+  try {
+    const session = await auth()
+
+    if (!session) {
+      return new NextResponse('Unauthorized.', { status: 401 })
+    }
+
+    const body = await req.json()
+
+    const { id, isPrivate } = ChangeUploadVisibility.parse(body)
+
+    await prisma.fileSettings.update({
+      where: {
+        authorId: session.user.id,
+        id,
+      },
+      data: {
+        private: isPrivate,
+      },
+    })
+    return new NextResponse('File visibility changed successfully.', {
+      status: 200,
+    })
   } catch (error) {
     return new NextResponse(JSON.stringify(error), { status: 500 })
   }

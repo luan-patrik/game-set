@@ -1,17 +1,18 @@
+import { PrismaAdapter } from '@auth/prisma-adapter'
 import type {
   GetServerSidePropsContext,
   NextApiRequest,
   NextApiResponse,
 } from 'next'
-import type { NextAuthOptions, TokenSet } from 'next-auth'
+import type { NextAuthOptions } from 'next-auth'
 import { getServerSession } from 'next-auth'
-import GoogleProvider from 'next-auth/providers/google'
+import { Adapter } from 'next-auth/adapters'
 import GithubProvider from 'next-auth/providers/github'
-import { PrismaAdapter } from '@auth/prisma-adapter'
+import GoogleProvider from 'next-auth/providers/google'
 import prisma from './db'
 
 export const config = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as Adapter,
   session: {
     strategy: 'jwt',
   },

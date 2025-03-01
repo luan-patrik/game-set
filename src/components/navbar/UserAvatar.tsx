@@ -1,14 +1,13 @@
 import { AvatarProps } from '@radix-ui/react-avatar'
-import { Avatar, AvatarFallback } from '../ui/avatar'
-import Image from 'next/image'
-import { Icons } from '../Icons'
 import { User } from 'next-auth'
+import Image from 'next/image'
+import { Avatar, AvatarFallback } from '../ui/avatar'
 
 interface UserAvatarProps extends AvatarProps {
   user: Pick<User, 'image'>
 }
 
-const UserAvatar = ({ user, ...props }: UserAvatarProps) => {
+export const UserAvatar = ({ user, ...props }: UserAvatarProps) => {
   return (
     <Avatar {...props}>
       {user.image ? (
@@ -28,5 +27,3 @@ const UserAvatar = ({ user, ...props }: UserAvatarProps) => {
     </Avatar>
   )
 }
-
-export default UserAvatar

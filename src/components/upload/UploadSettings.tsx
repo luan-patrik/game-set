@@ -1,18 +1,18 @@
 'use client'
 
-import { useState } from 'react'
-import axios from 'axios'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { UploadCreationRequest } from '@/validators/upload'
-import { useEdgeStore } from '../EdgeStoreProvider'
-import { type FileState, MultiFileDropzone } from './MultiFileDropzone'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import axios from 'axios'
+import { useState } from 'react'
+import { useEdgeStore } from '../providers/EdgeStoreProvider'
 import { Button } from '../ui/button'
+import { MultiFileDropzone, type FileState } from './MultiFileDropzone'
 
 interface UploadSettingsProps {
   settingsId: string
 }
 
-const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
+export const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
   const queryClient = useQueryClient()
   const [fileStates, setFileStates] = useState<FileState[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -113,5 +113,3 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
     </div>
   )
 }
-
-export default UploadSettings

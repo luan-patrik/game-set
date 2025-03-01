@@ -1,14 +1,16 @@
 'use client'
 
 import { useGetAllPostSettings } from '@/hooks/use-get-all-post-settings'
-import { Card, CardContent } from './ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Card } from './ui/card'
 
-const Home = () => {
+export const Home = () => {
   const { data, isLoading } = useGetAllPostSettings()
 
   if (isLoading) return 'Loading...'
+
+  console.log(data)
 
   return (
     <div className='mx-auto grid grid-cols-1 place-items-center gap-4 py-4 sm:grid-cols-2 md:grid-cols-3'>
@@ -30,7 +32,9 @@ const Home = () => {
                   width={224}
                   height={224}
                 />
-                <p className='text-ellipsis overflow-hidden whitespace-nowrap w-full'>{item.author.name}</p>
+                <p className='w-full overflow-hidden text-ellipsis whitespace-nowrap'>
+                  {item.author.name}
+                </p>
               </div>
             </Card>
           </Link>
@@ -38,5 +42,3 @@ const Home = () => {
     </div>
   )
 }
-
-export default Home

@@ -1,13 +1,13 @@
-import { Metadata } from 'next'
-import { redirect } from 'next/navigation'
+import { UploadOutput } from '@/components/upload/UploadOutput'
+import { useGetUserPostSettings } from '@/hooks/use-get-user-post-settings'
+import { auth } from '@/lib/auth'
 import {
   HydrationBoundary,
   QueryClient,
   dehydrate,
 } from '@tanstack/react-query'
-import { useGetUserPostSettings } from '@/hooks/use-get-user-post-settings'
-import { auth } from '@/lib/auth'
-import UploadOutput from '@/components/upload/UploadOutput'
+import { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: 'Upload das configurações',

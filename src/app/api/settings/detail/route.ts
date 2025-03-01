@@ -1,4 +1,3 @@
-import { auth } from '@/lib/auth'
 import prisma from '@/lib/db'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
@@ -21,20 +20,9 @@ export async function GET(req: Request) {
     })
 
   try {
-    const session = await auth()
-
     const data = await prisma.settings.findFirst({
       where: {
         id: id,
-        OR: [
-          {
-            private: false,
-          },
-          {
-            private: session?.user && true,
-            authorId: session?.user.id,
-          },
-        ],
         author: { name: name },
       },
       include: {
