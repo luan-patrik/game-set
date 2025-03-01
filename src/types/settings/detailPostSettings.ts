@@ -1,12 +1,11 @@
-import { Settings } from '@prisma/client'
-
-export type detailPostSettings = Settings & {
+export type detailPostSettings = {
   filesettings: {
     authorId: string
     fileUrl: string
     name: string
-    size: number,
+    private: boolean
+    size: number
     id: string
-    settingsId: string
+    createdAt: Date
   }[]
 }

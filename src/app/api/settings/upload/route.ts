@@ -1,6 +1,10 @@
 import { auth } from '@/lib/auth'
 import prisma from '@/lib/db'
-import { DeleteUploadValidator, UploadValidator } from '@/validators/upload'
+import {
+  ChangeUploadVisibility,
+  DeleteUploadValidator,
+  UploadValidator,
+} from '@/validators/upload'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
@@ -13,13 +17,12 @@ export async function POST(req: Request) {
       return new NextResponse('Unauthorized.', { status: 401 })
     }
 
-    const { name, fileUrl, size, settingsId } = UploadValidator.parse(body)
-
-    const settings = await prisma.settings.findFirst({
-      where: {
-        authorId: session.user.id,
-      },
-    })
+    const {
+      name,
+      fileUrl,
+      size,
+      private: isPrivate,
+    } = UploadValidator.parse(body)
 
     const fileCount = await prisma.fileSettings.count({
       where: {
@@ -31,31 +34,12 @@ export async function POST(req: Request) {
       return new NextResponse('Exceeded upload limit', { status: 429 })
     }
 
-    if (!settings) {
-      const createSettings = await prisma.settings.create({
-        data: {
-          authorId: session.user.id,
-          content: '',
-        },
-      })
-
-      await prisma.fileSettings.create({
-        data: {
-          name,
-          settingsId: createSettings.id,
-          fileUrl,
-          size,
-          authorId: session.user.id,
-        },
-      })
-    }
-
     await prisma.fileSettings.create({
       data: {
         name,
         fileUrl,
+        private: isPrivate,
         size,
-        settingsId: settingsId,
         authorId: session.user.id,
       },
     })
@@ -86,6 +70,35 @@ export async function DELETE(req: Request) {
       },
     })
     return new NextResponse('File deleted successfully.', { status: 200 })
+  } catch (error) {
+    return new NextResponse(JSON.stringify(error), { status: 500 })
+  }
+}
+
+export async function PUT(req: Request) {
+  try {
+    const session = await auth()
+
+    if (!session) {
+      return new NextResponse('Unauthorized.', { status: 401 })
+    }
+
+    const body = await req.json()
+
+    const { id, isPrivate } = ChangeUploadVisibility.parse(body.data)
+
+    await prisma.fileSettings.update({
+      where: {
+        authorId: session.user.id,
+        id,
+      },
+      data: {
+        private: isPrivate,
+      },
+    })
+    return new NextResponse('File visibility changed successfully.', {
+      status: 200,
+    })
   } catch (error) {
     return new NextResponse(JSON.stringify(error), { status: 500 })
   }

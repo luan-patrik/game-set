@@ -1,11 +1,11 @@
 'use client'
 
 import { useGetAllPostSettings } from '@/hooks/use-get-all-post-settings'
-import { Card, CardContent } from './ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Card } from './ui/card'
 
-const Home = () => {
+export const Home = () => {
   const { data, isLoading } = useGetAllPostSettings()
 
   if (isLoading) return 'Loading...'
@@ -16,21 +16,23 @@ const Home = () => {
         data.map((item) => (
           <Link
             key={item.id}
-            href={`/settings/${item.author.name}/${item.id}`}
-            className='flex w-full max-w-[18rem] justify-center'
+            href={`/settings/${item.name}/${item.id}`}
+            className='flex w-full max-w-72 justify-center'
           >
-            <Card className=' overflow-hidden'>
-              <div className='flex w-full min-w-0 flex-col items-center justify-center space-y-4 overflow-hidden overflow-ellipsis whitespace-nowrap px-2 py-10 text-center'>
+            <Card className='w-full overflow-hidden'>
+              <div className='flex w-full min-w-0 flex-col items-center justify-center space-y-4 overflow-hidden px-2 py-10 text-center overflow-ellipsis whitespace-nowrap'>
                 <Image
-                  alt={`Avatar de ${item.author.name}`}
-                  src={item.author.image}
+                  alt={`Avatar de ${item.name}`}
+                  src={item.image}
                   priority
                   quality={100}
-                  className='aspect-square select-none rounded-full'
+                  className='aspect-square rounded-full select-none'
                   width={224}
                   height={224}
                 />
-                <p className='text-ellipsis overflow-hidden whitespace-nowrap w-full'>{item.author.name}</p>
+                <p className='w-full overflow-hidden text-ellipsis whitespace-nowrap'>
+                  {item.name}
+                </p>
               </div>
             </Card>
           </Link>
@@ -38,5 +40,3 @@ const Home = () => {
     </div>
   )
 }
-
-export default Home

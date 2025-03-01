@@ -1,9 +1,9 @@
 'use client'
 
 import { useGetUserPostSettings } from '@/hooks/use-get-user-post-settings'
-import UploadSettings from './UploadSettings'
+import { UploadSettings } from './UploadSettings'
 
-const UploadOutput = () => {
+export const UploadOutput = () => {
   const { data, isLoading } = useGetUserPostSettings()
 
   if (isLoading) return 'Loading...'
@@ -14,5 +14,3 @@ const UploadOutput = () => {
     </div>
   )
 }
-
-export default UploadOutput

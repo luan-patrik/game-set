@@ -1,16 +1,15 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { buttonVariants } from '../ui/button'
 import { auth } from '@/lib/auth'
-import UserMenu from './UserMenu'
-import { getServerSession } from 'next-auth'
-import SwitchTheme from '../SwitchTheme'
+import Image from 'next/image'
+import Link from 'next/link'
+import { SwitchTheme } from '../SwitchTheme'
+import { buttonVariants } from '../ui/button'
+import { UserMenu } from './UserMenu'
 
-const Navbar = async () => {
+export const Navbar = async () => {
   const session = await auth()
 
   return (
-    <header className='sticky inset-x-0 top-0 z-40 border-b bg-background py-2'>
+    <header className='bg-background sticky inset-x-0 top-0 z-40 border-b py-2'>
       <nav className='container flex items-center justify-between'>
         <Link href='/'>
           <Image
@@ -38,5 +37,3 @@ const Navbar = async () => {
     </header>
   )
 }
-
-export default Navbar
