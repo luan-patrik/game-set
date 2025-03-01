@@ -10,7 +10,7 @@ export const UploadOutput = () => {
 
   return (
     <div className='py-4'>
-      <UploadSettings settingsId={data?.id || ''} />
+      <UploadSettings  />
     </div>
   )
 }
