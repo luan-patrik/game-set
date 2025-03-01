@@ -1,14 +1,11 @@
 import { DetailSettings } from '@/components/DetailSettings'
 
-interface SettingsPageProps {
-  params: {
-    name: string
-    id: string
-  }
-}
-
-export default function SettingsPage({ params }: SettingsPageProps) {
-  const { name, id } = params
+export default async function SettingsPage({
+  params,
+}: {
+  params: Promise<{ name: string; id: string }>
+}) {
+  const { name, id } = await params
 
   return <DetailSettings name={name} id={id} />
 }

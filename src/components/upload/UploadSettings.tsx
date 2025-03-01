@@ -8,11 +8,7 @@ import { useEdgeStore } from '../providers/EdgeStoreProvider'
 import { Button } from '../ui/button'
 import { MultiFileDropzone, type FileState } from './MultiFileDropzone'
 
-interface UploadSettingsProps {
-  settingsId: string
-}
-
-export const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
+export const UploadSettings = () => {
   const queryClient = useQueryClient()
   const [fileStates, setFileStates] = useState<FileState[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -34,13 +30,13 @@ export const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
       fileUrl,
       name,
       size,
-      settingsId,
+      private: isPrivate,
     }: UploadCreationRequest) => {
       const payload: UploadCreationRequest = {
         fileUrl,
         name,
         size,
-        settingsId: settingsId,
+        private: isPrivate,
       }
       const { data } = await axios.post(`/api/settings/upload`, payload)
       return data
@@ -71,7 +67,7 @@ export const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
             fileUrl: res.url,
             name: fileState.file.name,
             size: fileState.file.size,
-            settingsId: settingsId,
+            private: false,
           })
         } catch (error) {
           updateFileProgress(fileState.key, 'ERROR')

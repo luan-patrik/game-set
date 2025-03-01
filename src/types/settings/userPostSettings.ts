@@ -1,6 +1,4 @@
-import { Settings } from '@prisma/client'
-
-export type userPostSettings = Settings & {
+export type userPostSettings = {
   author: {
     name: string
     image: string
