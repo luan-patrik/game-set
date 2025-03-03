@@ -26,7 +26,7 @@ export async function GET(req: Request) {
         name,
         id,
       },
-      include: {
+      select: {
         filesettings: {
           where: {
             OR: [
