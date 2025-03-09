@@ -9,7 +9,6 @@ type Context = {
 
 async function createContext(): Promise<Context> {
   const session = await auth()
-
   return {
     userId: session?.user.id,
   }

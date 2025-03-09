@@ -1,7 +1,11 @@
+import { auth } from '@/lib/auth'
 import prisma from '@/lib/db'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
+  const session = await auth()
+
+  console.log(session)
   try {
     const allPostSettings = await prisma.user.findMany({
       select: {
@@ -10,9 +14,10 @@ export async function GET() {
         image: true,
       },
       where: {
-        filesettings: {
-          some: {},
-        },
+        OR: [
+          { id: session?.user.id },
+          { filesettings: { some: { private: false } } },
+        ],
       },
     })
 

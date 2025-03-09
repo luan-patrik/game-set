@@ -27,11 +27,17 @@ export async function GET(req: Request) {
         id,
       },
       select: {
+        name: true,
         filesettings: {
           where: {
             OR: [
-              { private: false },
-              { authorId: session?.user.id, private: session?.user && true },
+              {
+                private: session?.user && true,
+                authorId: session?.user.id,
+              },
+              {
+                private: false,
+              },
             ],
           },
           orderBy: {
@@ -41,7 +47,7 @@ export async function GET(req: Request) {
       },
     })
 
-    return new NextResponse(JSON.stringify(data))
+    return new NextResponse(JSON.stringify(data), { status: 200 })
   } catch (error) {
     return new NextResponse(JSON.stringify({ error: error }), { status: 500 })
   }
