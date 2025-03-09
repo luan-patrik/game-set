@@ -69,7 +69,10 @@ export async function DELETE(req: Request) {
         fileUrl,
       },
     })
-    return new NextResponse('File deleted successfully.', { status: 200 })
+    return new NextResponse(
+      JSON.stringify({ message: 'File deleted successfully' }),
+      { status: 200 },
+    )
   } catch (error) {
     return new NextResponse(JSON.stringify(error), { status: 500 })
   }
