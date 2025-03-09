@@ -79,33 +79,35 @@ export const UploadSettings = () => {
   }
 
   return (
-    <div className='flex w-full flex-col gap-2'>
-      <MultiFileDropzone
-        dropzoneOptions={{
-          maxFiles: 12,
-          accept: { '.blk,.cfg,.ini,.txt': [] },
-          minSize: 1, // 1Byte
-          maxSize: 1024 * 128, //128KB
-        }}
-        className='w-full'
-        value={fileStates}
-        onChange={setFileStates}
-        onFilesAdded={(addedFiles) => {
-          setFileStates([...fileStates, ...addedFiles])
-        }}
-      />
-      <Button
-        className='w-full'
-        variant='outline'
-        onClick={onSubmit}
-        disabled={
-          isLoading ||
-          !fileStates.filter((fileState) => fileState.progress === 'PENDING')
-            .length
-        }
-      >
-        Enviar
-      </Button>
+    <div className='py-4'>
+      <div className='flex w-full flex-col gap-2'>
+        <MultiFileDropzone
+          dropzoneOptions={{
+            maxFiles: 12,
+            accept: { '.blk,.cfg,.ini,.txt': [] },
+            minSize: 1, // 1Byte
+            maxSize: 1024 * 128, //128KB
+          }}
+          className='w-full'
+          value={fileStates}
+          onChange={setFileStates}
+          onFilesAdded={(addedFiles) => {
+            setFileStates([...fileStates, ...addedFiles])
+          }}
+        />
+        <Button
+          className='w-full'
+          variant='outline'
+          onClick={onSubmit}
+          disabled={
+            isLoading ||
+            !fileStates.filter((fileState) => fileState.progress === 'PENDING')
+              .length
+          }
+        >
+          Enviar
+        </Button>
+      </div>
     </div>
   )
 }

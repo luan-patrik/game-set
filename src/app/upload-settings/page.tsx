@@ -1,11 +1,5 @@
-import { UploadOutput } from '@/components/upload/UploadOutput'
-import { useGetUserPostSettings } from '@/hooks/use-get-user-post-settings'
+import { UploadSettings } from '@/components/upload/UploadSettings'
 import { auth } from '@/lib/auth'
-import {
-  HydrationBoundary,
-  QueryClient,
-  dehydrate,
-} from '@tanstack/react-query'
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
@@ -19,16 +13,5 @@ export default async function UploadSettingsPage() {
 
   if (!session) return redirect('/sign-in')
 
-  const queryClient = new QueryClient()
-
-  await queryClient.prefetchQuery({
-    queryKey: ['user'],
-    queryFn: useGetUserPostSettings,
-  })
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <UploadOutput />
-    </HydrationBoundary>
-  )
+  return <UploadSettings />
 }
