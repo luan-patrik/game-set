@@ -1,14 +1,13 @@
-'use client'
+'use server'
 
-import { useGetAllPostSettings } from '@/hooks/use-get-all-post-settings'
+import { getUsersWithPost } from '@/services/getUsersWithPosts'
+import { allPostSettings } from '@/types/settings/allPostSettings'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Card } from './ui/card'
 
-export const Home = () => {
-  const { data, isLoading } = useGetAllPostSettings()
-
-  if (isLoading) return 'Loading...'
+export const Home = async () => {
+  const data: allPostSettings = await getUsersWithPost()
 
   return (
     <div className='mx-auto grid grid-cols-1 place-items-center gap-4 py-4 sm:grid-cols-2 md:grid-cols-3'>
