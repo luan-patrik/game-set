@@ -1,4 +1,5 @@
 export type detailPostSettings = {
+  name: string
   filesettings: {
     authorId: string
     fileUrl: string
