@@ -1,6 +1,10 @@
 'use client'
 
 import { Session, User } from 'next-auth'
+import { signOut } from 'next-auth/react'
+import Link from 'next/link'
+import { HTMLAttributes } from 'react'
+import { SwitchTheme } from '../SwitchTheme'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,18 +12,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
-import UserAvatar from './UserAvatar'
-import { HTMLAttributes } from 'react'
-import Link from 'next/link'
-import { signOut } from 'next-auth/react'
-import SwitchTheme from '../SwitchTheme'
+import { UserAvatar } from './UserAvatar'
 
 interface UserMenuProps extends HTMLAttributes<HTMLDivElement> {
   user: Pick<User, 'image'>
   session: Session | null
 }
 
-const UserMenu = ({ user, session }: UserMenuProps) => {
+export const UserMenu = ({ user, session }: UserMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -32,16 +32,13 @@ const UserMenu = ({ user, session }: UserMenuProps) => {
         <DropdownMenuItem asChild>
           <Link href={'/upload-settings'}>Enviar configurações</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href={'/edit-settings'}>Criar configurações</Link>
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <SwitchTheme session={session} />
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className='font-bold'
-          onClick={() =>
-            signOut({
+          onClick={async () =>
+            await signOut({
               callbackUrl: '/',
               redirect: true,
             })
@@ -53,5 +50,3 @@ const UserMenu = ({ user, session }: UserMenuProps) => {
     </DropdownMenu>
   )
 }
-
-export default UserMenu

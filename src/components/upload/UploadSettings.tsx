@@ -1,18 +1,14 @@
 'use client'
 
-import { useState } from 'react'
-import axios from 'axios'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { UploadCreationRequest } from '@/validators/upload'
-import { useEdgeStore } from '../EdgeStoreProvider'
-import { type FileState, MultiFileDropzone } from './MultiFileDropzone'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import axios from 'axios'
+import { useState } from 'react'
+import { useEdgeStore } from '../providers/EdgeStoreProvider'
 import { Button } from '../ui/button'
+import { MultiFileDropzone, type FileState } from './MultiFileDropzone'
 
-interface UploadSettingsProps {
-  settingsId: string
-}
-
-const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
+export const UploadSettings = () => {
   const queryClient = useQueryClient()
   const [fileStates, setFileStates] = useState<FileState[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -34,13 +30,13 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
       fileUrl,
       name,
       size,
-      settingsId,
+      private: isPrivate,
     }: UploadCreationRequest) => {
       const payload: UploadCreationRequest = {
         fileUrl,
         name,
         size,
-        settingsId: settingsId,
+        private: isPrivate,
       }
       const { data } = await axios.post(`/api/settings/upload`, payload)
       return data
@@ -71,7 +67,7 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
             fileUrl: res.url,
             name: fileState.file.name,
             size: fileState.file.size,
-            settingsId: settingsId,
+            private: false,
           })
         } catch (error) {
           updateFileProgress(fileState.key, 'ERROR')
@@ -83,35 +79,35 @@ const UploadSettings = ({ settingsId }: UploadSettingsProps) => {
   }
 
   return (
-    <div className='flex w-full flex-col gap-2'>
-      <MultiFileDropzone
-        dropzoneOptions={{
-          maxFiles: 12,
-          accept: { '.blk,.cfg,.ini,.txt': [] },
-          minSize: 1, // 1Byte
-          maxSize: 1024 * 128, //128KB
-        }}
-        className='w-full'
-        value={fileStates}
-        onChange={setFileStates}
-        onFilesAdded={(addedFiles) => {
-          setFileStates([...fileStates, ...addedFiles])
-        }}
-      />
-      <Button
-        className='w-full'
-        variant='outline'
-        onClick={onSubmit}
-        disabled={
-          isLoading ||
-          !fileStates.filter((fileState) => fileState.progress === 'PENDING')
-            .length
-        }
-      >
-        Enviar
-      </Button>
+    <div className='py-4'>
+      <div className='flex w-full flex-col gap-2'>
+        <MultiFileDropzone
+          dropzoneOptions={{
+            maxFiles: 12,
+            accept: { '.blk,.cfg,.ini,.txt': [] },
+            minSize: 1, // 1Byte
+            maxSize: 1024 * 128, //128KB
+          }}
+          className='w-full'
+          value={fileStates}
+          onChange={setFileStates}
+          onFilesAdded={(addedFiles) => {
+            setFileStates([...fileStates, ...addedFiles])
+          }}
+        />
+        <Button
+          className='w-full'
+          variant='outline'
+          onClick={onSubmit}
+          disabled={
+            isLoading ||
+            !fileStates.filter((fileState) => fileState.progress === 'PENDING')
+              .length
+          }
+        >
+          Enviar
+        </Button>
+      </div>
     </div>
   )
 }
-
-export default UploadSettings

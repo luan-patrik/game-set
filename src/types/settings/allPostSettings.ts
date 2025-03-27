@@ -1,8 +1,5 @@
-import { Settings } from '@prisma/client'
-
-export type allPostSettings = Settings & {
-  author: {
-    name: string
-    image: string
-  }
-}
+export type allPostSettings = {
+  id: string
+  name: string
+  image: string
+}[]

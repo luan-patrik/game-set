@@ -1,19 +1,17 @@
-import type {
-  GetServerSidePropsContext,
-  NextApiRequest,
-  NextApiResponse,
-} from 'next'
-import type { NextAuthOptions, TokenSet } from 'next-auth'
-import { getServerSession } from 'next-auth'
-import GoogleProvider from 'next-auth/providers/google'
-import GithubProvider from 'next-auth/providers/github'
 import { PrismaAdapter } from '@auth/prisma-adapter'
+import NextAuth from 'next-auth'
+import GithubProvider from 'next-auth/providers/github'
+import GoogleProvider from 'next-auth/providers/google'
 import prisma from './db'
 
-export const config = {
+export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  session: {
-    strategy: 'jwt',
+  cookies: {
+    sessionToken: {
+      options: {
+        httpOnly: true,
+      },
+    },
   },
   providers: [
     GoogleProvider({
@@ -25,50 +23,34 @@ export const config = {
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     }),
   ],
+  session: {
+    strategy: 'jwt',
+  },
+  secret: process.env.AUTH_SECRET,
   callbacks: {
-    async session({ token, session }) {
-      if (token) {
-        session.user.id = token.id
-        session.user.name = token.name
-        session.user.email = token.email
-        session.user.image = token.picture
-      }
-      return session
-    },
     async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id as string
+      }
+
       const db = await prisma.user.findFirst({
         where: {
           email: token.email,
         },
       })
 
-      if (!db) {
-        token.id = user.id
-        return token
+      if (db) {
+        token.id = db.id as string
       }
 
-      return {
-        id: db.id,
-        name: db.name,
-        email: db.email,
-        picture: db.image,
+      return token
+    },
+
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id
       }
+      return session
     },
   },
-  pages: {
-    signIn: '/sign-in',
-    error: '/sign-in',
-    signOut: '/',
-  },
-
-  secret: process.env.NEXT_SECRET,
-} satisfies NextAuthOptions
-
-export function auth(
-  ...args:
-    | [GetServerSidePropsContext['req'], GetServerSidePropsContext['res']]
-    | [NextApiRequest, NextApiResponse]
-    | []
-) {
-  return getServerSession(...args, config)
-}
+})

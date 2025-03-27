@@ -1,32 +1,23 @@
-import { NextResponse } from 'next/server'
-import prisma from '@/lib/db'
 import { auth } from '@/lib/auth'
+import prisma from '@/lib/db'
+import { NextResponse } from 'next/server'
 
 export async function GET() {
-  try {
-    const session = await auth()
+  const session = await auth()
 
-    const allPostSettings = await prisma.settings.findMany({
-      where: {
-        OR: [
-          {
-            private: false,
-          },
-          {
-            private: session?.user && true,
-            authorId: session?.user.id,
-          },
-        ],
-      },
+  console.log(session)
+  try {
+    const allPostSettings = await prisma.user.findMany({
       select: {
         id: true,
-        authorId: true,
-        author: {
-          select: {
-            name: true,
-            image: true,
-          },
-        },
+        name: true,
+        image: true,
+      },
+      where: {
+        OR: [
+          { id: session?.user.id },
+          { filesettings: { some: { private: false } } },
+        ],
       },
     })
 

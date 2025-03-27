@@ -1,6 +1,9 @@
 'use client'
 
+import { XIcon } from 'lucide-react'
 import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { Button } from './ui/button'
 import {
   Card,
@@ -9,22 +12,17 @@ import {
   CardHeader,
   CardTitle,
 } from './ui/card'
-import { useToast } from './ui/use-toast'
-import { XIcon } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 
-const UserAuthForm = () => {
+export const UserAuthForm = () => {
   const router = useRouter()
-  const { toast } = useToast()
 
   const signInWithGoogle = async () => {
     try {
       await signIn('google')
     } catch (error) {
-      toast({
-        title: 'Algo deu errado.',
+      toast('Algo deu errado.', {
         description: 'Ocorreu um erro ao fazer login com o Google.',
-        variant: 'destructive',
+        className: 'bg-destructive',
       })
     }
   }
@@ -33,16 +31,15 @@ const UserAuthForm = () => {
     try {
       await signIn('github')
     } catch (error) {
-      toast({
-        title: 'Algo deu errado.',
+      toast('Algo deu errado.', {
         description: 'Ocorreu um erro ao fazer login com o Github.',
-        variant: 'destructive',
+        className: 'bg-destructive',
       })
     }
   }
 
   return (
-    <div className='fixed inset-0 z-50 bg-background'>
+    <div className='bg-background fixed inset-0 z-50'>
       <form className='container flex h-full items-center justify-center'>
         <Card className='relative'>
           <Button
@@ -52,7 +49,7 @@ const UserAuthForm = () => {
             aria-label='Voltar para o início.'
             size='icon'
             variant='ghost'
-            className='absolute right-2 top-2'
+            className='absolute top-2 right-2'
           >
             <XIcon className='h-[1.2rem] w-[1.2rem]' />
             <span className='sr-only'>Voltar para o início.</span>
@@ -86,5 +83,3 @@ const UserAuthForm = () => {
     </div>
   )
 }
-
-export default UserAuthForm

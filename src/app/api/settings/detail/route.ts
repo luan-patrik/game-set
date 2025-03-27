@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 export async function GET(req: Request) {
   const url = new URL(req.url)
+  const session = await auth()
 
   const { name, id } = z
     .object({
@@ -12,8 +13,7 @@ export async function GET(req: Request) {
       id: z
         .string()
         .regex(/^[0-9A-Fa-f]+$/)
-        .min(24)
-        .max(24),
+        .length(24),
     })
     .parse({
       name: url.searchParams.get('name'),
@@ -21,28 +21,34 @@ export async function GET(req: Request) {
     })
 
   try {
-    const session = await auth()
-
-    const data = await prisma.settings.findFirst({
+    const data = await prisma.user.findFirst({
       where: {
-        id: id,
-        OR: [
-          {
-            private: false,
-          },
-          {
-            private: session?.user && true,
-            authorId: session?.user.id,
-          },
-        ],
-        author: { name: name },
+        name,
+        id,
       },
-      include: {
-        filesettings: true,
+      select: {
+        name: true,
+        filesettings: {
+          where: {
+            OR: [
+              {
+                private: session?.user && true,
+                authorId: session?.user.id,
+              },
+              {
+                private: false,
+              },
+            ],
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
       },
     })
-    return new NextResponse(JSON.stringify(data))
+
+    return new NextResponse(JSON.stringify(data), { status: 200 })
   } catch (error) {
-    return new NextResponse('error', { status: 500 })
+    return new NextResponse(JSON.stringify({ error: error }), { status: 500 })
   }
 }

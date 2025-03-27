@@ -1,52 +1,35 @@
-'use client'
-
+import { getDetailSettings } from '@/services/getDetailSettinges'
+import { detailPostSettings } from '@/types/settings/detailPostSettings'
 import { notFound } from 'next/navigation'
-import DOMpurify from 'dompurify'
-import { useGetDetailSettings } from '@/hooks/use-get-detail-post-settings'
-import { Card, CardContent } from './ui/card'
-import DetailUploadedSettings from './DetailUploadedSettings'
+import { DetailUploadedSettings } from './DetailUploadedSettings'
 
 interface DetailSettingsProps {
   name: string
   id: string
 }
 
-const DetailSettings = ({ name, id }: DetailSettingsProps) => {
-  const { data, isLoading } = useGetDetailSettings(name, id)
+export const DetailSettings = async ({ name, id }: DetailSettingsProps) => {
+  const data: detailPostSettings = await getDetailSettings(name, id)
 
-  if (isLoading) return 'Loading...'
-
-  if (!data) return notFound()
-
-  const clean = DOMpurify.sanitize(data.content, {
-    USE_PROFILES: { html: true },
-  })
+  if (!data || data.filesettings.length < 1) return notFound()
 
   return (
     <div className='flex flex-col gap-4 py-4'>
+      <h1 className='text-xl font-semibold sm:text-3xl'>{data.name}</h1>
       <div className='grid grid-cols-1 place-items-center gap-4 sm:grid-cols-2 md:grid-cols-3'>
         {data.filesettings.map((item) => (
           <DetailUploadedSettings
             key={item.id}
             size={item.size}
+            private={item.private}
             fileUrl={item.fileUrl}
             authorId={item.authorId}
             name={item.name}
             id={item.id}
+            createdAt={item.createdAt}
           />
         ))}
       </div>
-
-      {data.content !== '' ? (
-        <Card className='container prose w-full'>
-          <CardContent
-            className='p-2'
-            dangerouslySetInnerHTML={{ __html: clean }}
-          ></CardContent>
-        </Card>
-      ) : null}
     </div>
   )
 }
-
-export default DetailSettings

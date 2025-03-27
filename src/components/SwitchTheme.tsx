@@ -1,6 +1,9 @@
 'use client'
 
-import { BotIcon, MoonIcon, SunIcon } from 'lucide-react'
+import { MoonIcon, SunIcon } from 'lucide-react'
+import { Session } from 'next-auth'
+import { useTheme } from 'next-themes'
+import { Button } from './ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,15 +12,12 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
-import { useTheme } from 'next-themes'
-import { Session } from 'next-auth'
-import { Button } from './ui/button'
 
 interface SwitchThemeProps {
   session: Session | null
 }
 
-const SwitchTheme = ({ session }: SwitchThemeProps) => {
+export const SwitchTheme = ({ session }: SwitchThemeProps) => {
   const { setTheme, theme } = useTheme()
 
   return (
@@ -105,5 +105,3 @@ const SwitchTheme = ({ session }: SwitchThemeProps) => {
     </>
   )
 }
-
-export default SwitchTheme
