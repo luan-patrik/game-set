@@ -11,7 +11,7 @@ export const Navbar = async () => {
   return (
     <header className='bg-background sticky inset-x-0 top-0 z-40 border-b py-2'>
       <nav className='container flex items-center justify-between'>
-        <Link href='/'>
+        <Link href='/' className='flex items-center gap-2'>
           <Image
             src='/assets/logo.webp'
             alt='logo'
@@ -19,6 +19,7 @@ export const Navbar = async () => {
             width={50}
             height={50}
           />
+          <span className='text-xl font-semibold appearance-none'>GameSet</span>
         </Link>
         {session?.user ? (
           <UserMenu user={session.user} session={session} />
