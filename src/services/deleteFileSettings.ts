@@ -1,4 +1,4 @@
-'use server'
+import 'server-only'
 
 import { revalidateTag } from 'next/cache'
 import { cookies } from 'next/headers'
