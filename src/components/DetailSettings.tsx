@@ -1,4 +1,4 @@
-import { getDetailSettings } from '@/services/getDetailSettinges'
+import { getDetailSettings } from '@/services/getDetailSettings'
 import { detailPostSettings } from '@/types/settings/detailPostSettings'
 import { notFound } from 'next/navigation'
 import { DetailUploadedSettings } from './DetailUploadedSettings'
