@@ -3,7 +3,7 @@
 import { debounce } from 'lodash'
 import { X } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useTransition } from 'react'
 import { TabExplorerGameFilter } from './TabExplorerGameFilter'
 import { TabExplorerSearchConfigInput } from './TabExplorerSearchConfigInput'
 import { Badge } from './ui/badge'
@@ -12,6 +12,7 @@ import { TabsContent } from './ui/tabs'
 export const TabExplorerOption = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const [isPending, startTransition] = useTransition()
 
   const [inputValue, setInputValue] = useState(searchParams.get('search') || '')
 
@@ -25,7 +26,9 @@ export const TabExplorerOption = () => {
       } else {
         params.delete('search')
       }
-      router.push(`?${params.toString()}`, { scroll: false })
+      startTransition(() => {
+        router.replace(`?${params.toString()}`, { scroll: false })
+      })
     }, 300),
     [router, searchParams],
   )
@@ -57,7 +60,9 @@ export const TabExplorerOption = () => {
       params.set('search', inputValue)
     }
 
-    router.push(`?${params.toString()}`)
+    startTransition(() => {
+      router.replace(`?${params.toString()}`, { scroll: false })
+    })
   }
 
   return (
