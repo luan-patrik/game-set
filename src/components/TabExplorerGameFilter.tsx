@@ -29,40 +29,44 @@ export const TabExplorerGameFilter = ({
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const handleSearchChange = useCallback((value: string) => {
-    setSearchTerm(value)
-    fetchCategories(value)
-  }, [])
+  const fetchCategories = async (value: string) => {
+    if (!value.trim()) {
+      setSearchResults([])
+      return
+    }
 
-  const fetchCategories = useCallback(
-    debounce(async (value: string) => {
-      if (!value.trim()) {
-        setSearchResults([])
-        return
+    setIsLoading(true)
+
+    try {
+      const params = new URLSearchParams({ q: value })
+      const res = await fetch(`/api/game/category?${params.toString()}`)
+
+      if (!res.ok) {
+        throw new Error(`Erro na requisição: ${res.status}`)
       }
 
-      setIsLoading(true)
+      const { data } = await res.json()
+      const results = data || []
 
-      try {
-        const params = new URLSearchParams({ q: value })
-        const res = await fetch(`/api/game/category?${params.toString()}`)
+      setSearchResults(results)
+    } catch (error) {
+      setSearchResults([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
-        if (!res.ok) {
-          throw new Error(`Erro na requisição: ${res.status}`)
-        }
-
-        const { data } = await res.json()
-        const results = data || []
-
-        setSearchResults(results)
-      } catch (error) {
-        setSearchResults([])
-      } finally {
-        setIsLoading(false)
-      }
+  const debouncedFetch = useCallback(
+    debounce((value: string) => {
+      fetchCategories(value)
     }, 300),
     [],
   )
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value)
+    debouncedFetch(value)
+  }
 
   return (
     <Popover>
