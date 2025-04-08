@@ -6,8 +6,9 @@ interface TwitchTokenResponse {
   token_type: string
 }
 
-let accessToken = ''
-let tokenExpiresAt = 0
+let accessToken: string | null = null
+let tokenExpiresAt: number = 0
+const TOKEN_BUFFER_TIME = 5 * 60 * 1000
 
 const isTokenValid = (): boolean => {
   return Boolean(accessToken && tokenExpiresAt > Date.now())
@@ -41,8 +42,9 @@ const refreshToken = async (): Promise<string> => {
 }
 
 export const getAccessToken = async (): Promise<string> => {
-  if (isTokenValid()) {
+  if (accessToken && Date.now() < tokenExpiresAt - TOKEN_BUFFER_TIME) {
     return accessToken
   }
+
   return refreshToken()
 }
