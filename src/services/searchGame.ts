@@ -7,13 +7,34 @@ interface GameProps {
   name: string
 }
 
-export const searchGame = async (category: string | string[] | undefined) => {
+interface SearchResult {
+  data: GameProps[]
+  status: number
+  error?: string
+}
+
+export const searchGame = async (
+  category: string | string[] | undefined,
+): Promise<SearchResult> => {
   if (!category) {
     return { data: [], status: 200 }
   }
 
+  const searchTerm = Array.isArray(category) ? category[0] : category
+  if (typeof searchTerm !== 'string' || searchTerm.trim().length < 2) {
+    return {
+      data: [],
+      status: 400,
+      error: 'O termo de busca deve ter pelo menos 2 caracteres',
+    }
+  }
+
   try {
     const token = await getAccessToken()
+
+    if (!token) {
+      throw new Error('Token de acesso não disponível')
+    }
 
     const res = await fetch('https://api.igdb.com/v4/games', {
       method: 'POST',
@@ -22,14 +43,21 @@ export const searchGame = async (category: string | string[] | undefined) => {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'text/plain',
       },
-      body: `search "${category}"; fields name; limit 10;`,
+      body: `search "${searchTerm}"; fields name; limit 10;`,
     })
 
     if (!res.ok) {
-      throw new Error('Erro ao buscar jogos')
+      const errorData = await res.json().catch(() => ({}))
+      throw new Error(
+        `Erro ao buscar jogos: ${res.status} - ${errorData.message || 'Erro desconhecido'}`,
+      )
     }
 
     const games = (await res.json()) as GameProps[]
+
+    if (!Array.isArray(games)) {
+      throw new Error('Formato de resposta inválido da API')
+    }
 
     const uniqueGames = Array.from(
       new Map(games.map((game) => [game.name.toLowerCase(), game])).values(),
@@ -37,6 +65,12 @@ export const searchGame = async (category: string | string[] | undefined) => {
 
     return { data: uniqueGames, status: 200 }
   } catch (error) {
-    throw new Error('Erro interno do servidor')
+    console.error('Erro na busca de jogos:', error)
+    return {
+      data: [],
+      status: 500,
+      error:
+        error instanceof Error ? error.message : 'Erro interno do servidor',
+    }
   }
 }
