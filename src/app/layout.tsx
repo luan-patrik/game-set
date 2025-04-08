@@ -1,7 +1,6 @@
 import { Navbar } from '@/components/navbar/Navbar'
 import { Providers } from '@/components/providers/Providers'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
-import { TabsNavigation } from '@/components/TabsNavigation'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -37,7 +36,6 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Navbar />
-            <TabsNavigation />
             <main className='container'>{children}</main>
           </ThemeProvider>
         </Providers>

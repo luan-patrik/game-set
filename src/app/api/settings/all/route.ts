@@ -5,7 +5,6 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   const session = await auth()
 
-  console.log(session)
   try {
     const allPostSettings = await prisma.user.findMany({
       select: {
