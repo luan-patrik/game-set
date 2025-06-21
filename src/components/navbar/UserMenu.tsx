@@ -25,12 +25,19 @@ export const UserMenu = ({ user, session }: UserMenuProps) => {
       <DropdownMenuTrigger>
         <UserAvatar
           user={{ image: user.image || null }}
-          className='h-10 w-10 ring-2 ring-foreground ring-offset-background'
+          className='ring-foreground ring-offset-background h-10 w-10 ring-2'
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
         <DropdownMenuItem asChild>
-          <Link href={'/upload-settings'}>Enviar configurações</Link>
+          <Link prefetch={true} href={'/'}>
+            Explorar
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link prefetch={true} href={'/adicionar'}>
+            Adicionar configuração
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <SwitchTheme session={session} />
