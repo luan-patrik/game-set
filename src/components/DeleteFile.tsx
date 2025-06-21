@@ -1,19 +1,14 @@
-import { deleteFile } from '@/services/deleteFileSettings'
+import { deleteFile } from '@/app/actions/delete-file-actions'
 import { useEdgeStore } from './providers/EdgeStoreProvider'
 import { DropdownMenuItem } from './ui/dropdown-menu'
 
-interface DeleteFileProps {
-  id: string
-  fileUrl: string
-}
-
-export const DeleteFile = ({ id, fileUrl }: DeleteFileProps) => {
+export const DeleteFile = (data: { id: string; fileUrl: string }) => {
   const { edgestore } = useEdgeStore()
 
   const handleDelete = async () => {
     try {
-      await edgestore.publicFiles.delete({ url: fileUrl })
-      await deleteFile(id, fileUrl)
+      await edgestore.publicFiles.delete({ url: data.fileUrl })
+      await deleteFile(data)
     } catch (error) {
       console.error('Erro ao deletar arquivo:', error)
     }
