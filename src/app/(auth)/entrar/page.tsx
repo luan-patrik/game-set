@@ -4,7 +4,7 @@ import { UserAuthForm } from '../../../components/UserAuthForm'
 
 export default async function PageSignIn() {
   const session = await auth()
-  
+
   if (session) redirect('/')
 
   return <UserAuthForm />
