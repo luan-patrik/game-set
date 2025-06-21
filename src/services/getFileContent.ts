@@ -6,12 +6,11 @@ export const getFileContent = async (
       method: 'GET',
       cache: 'force-cache',
       next: {
-        revalidate: 60,
         tags: ['file-content', url],
       },
     })
 
-    if (!res.ok) throw new Error('Erro ao carregar o conteúdo')
+    if (!res.ok) throw new Error('Erro ao carregar o conteúdo.')
     const text = await res.text()
 
     try {

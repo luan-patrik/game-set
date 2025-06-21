@@ -1,5 +1,5 @@
 import { CardGameSetting } from '@/components/CardGameSetting'
-import { getSettingsList } from './actions/get-settings-actions'
+import { getSettingsList } from '@/services/getSettingsList'
 
 export default async function Home() {
   const data = await getSettingsList()

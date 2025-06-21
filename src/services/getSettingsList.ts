@@ -1,20 +1,11 @@
 'use server'
 
-import { GameSetting } from '@/types/settings/game-setting'
+import { getAllFileSetting } from '@/lib/getAllFileSetting'
+import { GameSetting } from '@/types/settings/GameSetting'
+import { cache } from 'react'
 
-export const getSettingsList = async () => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
-  const res = await fetch(`${baseUrl}/api/settings/all`, {
-    method: 'GET',
-    cache: 'force-cache',
-    next: {
-      tags: ['settings'],
-    },
-  })
+export const getSettingsList = cache(async (): Promise<GameSetting> => {
+  const data = await getAllFileSetting()
 
-  if (!res.ok) {
-    throw new Error('Erro ao buscar os arquivos.')
-  }
-
-  return res.json() as Promise<GameSetting>
-}
+  return data
+})

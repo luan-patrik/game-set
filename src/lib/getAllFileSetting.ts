@@ -1,6 +1,6 @@
 import prisma from '@/lib/db'
 
-export async function getAllSettings() {
+export async function getAllFileSetting() {
   return prisma.fileSettings.findMany({
     where: {
       private: false,
