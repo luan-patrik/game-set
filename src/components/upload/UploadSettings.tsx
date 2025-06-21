@@ -1,113 +1,15 @@
-'use client'
-
-import { UploadCreationRequest } from '@/validators/upload'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import axios from 'axios'
-import { useState } from 'react'
-import { useEdgeStore } from '../providers/EdgeStoreProvider'
-import { Button } from '../ui/button'
-import { MultiFileDropzone, type FileState } from './MultiFileDropzone'
+import { UploadForm } from './UploadForm'
 
 export const UploadSettings = () => {
-  const queryClient = useQueryClient()
-  const [fileStates, setFileStates] = useState<FileState[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const { edgestore } = useEdgeStore()
-
-  function updateFileProgress(key: string, progress: FileState['progress']) {
-    setFileStates((fileStates) => {
-      const newFileStates = structuredClone(fileStates)
-      const fileState = newFileStates.find((fileState) => fileState.key === key)
-      if (fileState) {
-        fileState.progress = progress
-      }
-      return newFileStates
-    })
-  }
-
-  const { mutate: create } = useMutation({
-    mutationFn: async ({
-      fileUrl,
-      name,
-      size,
-      private: isPrivate,
-    }: UploadCreationRequest) => {
-      const payload: UploadCreationRequest = {
-        fileUrl,
-        name,
-        size,
-        private: isPrivate,
-      }
-      const { data } = await axios.post(`/api/settings/upload`, payload)
-      return data
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries()
-    },
-  })
-
-  const onSubmit = async () => {
-    setIsLoading(true)
-    await Promise.all(
-      fileStates.map(async (fileState) => {
-        if (fileState.progress !== 'PENDING') return
-        try {
-          const res = await edgestore.publicFiles.upload({
-            file: fileState.file,
-            input: { type: 'post' },
-            onProgressChange: async (progress) => {
-              updateFileProgress(fileState.key, progress)
-              if (progress === 100) {
-                await new Promise((resolve) => setTimeout(resolve, 1000))
-                updateFileProgress(fileState.key, 'COMPLETE')
-              }
-            },
-          })
-          create({
-            fileUrl: res.url,
-            name: fileState.file.name,
-            size: fileState.file.size,
-            private: false,
-          })
-        } catch (error) {
-          updateFileProgress(fileState.key, 'ERROR')
-        } finally {
-          setIsLoading(false)
-        }
-      }),
-    )
+  const handleUploadSuccess = async () => {
+    'use server'
   }
 
   return (
-    <div className='py-4'>
-      <div className='flex w-full flex-col gap-2'>
-        <MultiFileDropzone
-          dropzoneOptions={{
-            maxFiles: 12,
-            accept: { '.blk,.cfg,.ini,.txt': [] },
-            minSize: 1, // 1Byte
-            maxSize: 1024 * 128, //128KB
-          }}
-          className='w-full'
-          value={fileStates}
-          onChange={setFileStates}
-          onFilesAdded={(addedFiles) => {
-            setFileStates([...fileStates, ...addedFiles])
-          }}
-        />
-        <Button
-          className='w-full'
-          variant='outline'
-          onClick={onSubmit}
-          disabled={
-            isLoading ||
-            !fileStates.filter((fileState) => fileState.progress === 'PENDING')
-              .length
-          }
-        >
-          Enviar
-        </Button>
-      </div>
+    <div className='bg-background rounded-lg border p-6 shadow'>
+      <h2 className='mb-4 text-2xl font-semibold'>Enviar Configurações</h2>
+      <p className='mb-6 text-gray-600'>Faça upload de suas configurações.</p>
+      <UploadForm onUploadSuccess={handleUploadSuccess} />
     </div>
   )
 }
