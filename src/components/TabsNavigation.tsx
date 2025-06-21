@@ -10,7 +10,7 @@ export const TabsNavigation = () => {
 
   const pathToTabValue: Record<string, string> = {
     '/': 'explorar',
-    '/adicionar-configs': 'adicionar',
+    '/adicionar': 'adicionar',
     '/minhas-configs': 'configs',
   }
 
@@ -24,7 +24,7 @@ export const TabsNavigation = () => {
             value='explorar'
             className='!rounded-button whitespace-nowrap'
           >
-            <Link href='/' aria-label='Explorar'>
+            <Link prefetch={true} href='/' aria-label='Explorar'>
               Explorar
             </Link>
           </TabsTrigger>
@@ -33,7 +33,7 @@ export const TabsNavigation = () => {
             value='adicionar'
             className='!rounded-button whitespace-nowrap'
           >
-            <Link href='/adicionar-configs' aria-label='Adicionar'>
+            <Link prefetch={true} href='/adicionar' aria-label='Adicionar'>
               Adicionar
             </Link>
           </TabsTrigger>
@@ -42,7 +42,11 @@ export const TabsNavigation = () => {
             value='configs'
             className='!rounded-button whitespace-nowrap'
           >
-            <Link href='/minhas-configs' aria-label='Minhas Configs'>
+            <Link
+              prefetch={true}
+              href='/minhas-configs'
+              aria-label='Minhas Configs'
+            >
               Minhas Configs
             </Link>
           </TabsTrigger>
