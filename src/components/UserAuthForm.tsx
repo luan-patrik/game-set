@@ -2,9 +2,9 @@
 
 import { XIcon } from 'lucide-react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { toast } from 'sonner'
-import { Button } from './ui/button'
+import { Button, buttonVariants } from './ui/button'
 import {
   Card,
   CardContent,
@@ -14,8 +14,6 @@ import {
 } from './ui/card'
 
 export const UserAuthForm = () => {
-  const router = useRouter()
-
   const signInWithGoogle = async () => {
     try {
       await signIn('google')
@@ -42,18 +40,19 @@ export const UserAuthForm = () => {
     <div className='bg-background fixed inset-0 z-50'>
       <form className='container flex h-full items-center justify-center'>
         <Card className='relative'>
-          <Button
-            onClick={() => router.push('/')}
-            type='button'
+          <Link
+            href='/'
             title='Voltar ao início.'
             aria-label='Voltar para o início.'
-            size='icon'
-            variant='ghost'
-            className='absolute top-2 right-2'
+            className={buttonVariants({
+              variant: 'ghost',
+              size: 'icon',
+              className: 'absolute top-2 right-2',
+            })}
           >
             <XIcon className='h-[1.2rem] w-[1.2rem]' />
             <span className='sr-only'>Voltar para o início.</span>
-          </Button>
+          </Link>
           <CardHeader>
             <CardTitle className='font-bold'>Entrar</CardTitle>
             <CardDescription className='text-base'>
