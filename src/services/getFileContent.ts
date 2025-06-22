@@ -1,3 +1,5 @@
+'use server'
+
 export const getFileContent = async (
   url: string,
 ): Promise<string | object | null> => {

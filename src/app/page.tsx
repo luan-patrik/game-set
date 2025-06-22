@@ -1,14 +1,21 @@
 import { CardGameSetting } from '@/components/CardGameSetting'
+import { ExplorerOption } from '@/components/ExplorerOption'
 import { getSettingsList } from '@/services/getSettingsList'
+import { Suspense } from 'react'
 
 export default async function Home() {
   const data = await getSettingsList()
 
   return (
-    <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
-      {data.map((setting) => (
-        <CardGameSetting key={setting.id} {...setting} />
-      ))}
+    <div className='mt-4 space-y-4'>
+      <ExplorerOption />
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
+        <Suspense fallback='Loading...'>
+          {data.map((setting) => (
+            <CardGameSetting key={setting.id} {...setting} />
+          ))}
+        </Suspense>
+      </div>
     </div>
   )
 }
