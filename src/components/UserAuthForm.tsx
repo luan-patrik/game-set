@@ -1,9 +1,6 @@
-'use client'
-
+import { signIn } from '@/lib/auth'
 import { XIcon } from 'lucide-react'
-import { signIn } from 'next-auth/react'
 import Link from 'next/link'
-import { toast } from 'sonner'
 import { Button, buttonVariants } from './ui/button'
 import {
   Card,
@@ -14,31 +11,9 @@ import {
 } from './ui/card'
 
 export const UserAuthForm = () => {
-  const signInWithGoogle = async () => {
-    try {
-      await signIn('google')
-    } catch (error) {
-      toast('Algo deu errado.', {
-        description: 'Ocorreu um erro ao fazer login com o Google.',
-        className: 'bg-destructive',
-      })
-    }
-  }
-
-  const signInWithGithub = async () => {
-    try {
-      await signIn('github')
-    } catch (error) {
-      toast('Algo deu errado.', {
-        description: 'Ocorreu um erro ao fazer login com o Github.',
-        className: 'bg-destructive',
-      })
-    }
-  }
-
   return (
     <div className='bg-background fixed inset-0 z-50'>
-      <form className='container flex h-full items-center justify-center'>
+      <div className='container flex h-full items-center justify-center'>
         <Card className='relative'>
           <Link
             href='/'
@@ -60,25 +35,31 @@ export const UserAuthForm = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-2'>
-            <Button
-              className='w-full'
-              type='button'
-              onClick={signInWithGoogle}
-              variant='outline'
+            <form
+              action={async () => {
+                'use server'
+                await signIn('google')
+              }}
+              className='inline-flex w-full items-center justify-center'
             >
-              Entrar com Google
-            </Button>
-            <Button
-              className='w-full'
-              type='button'
-              onClick={signInWithGithub}
-              variant='outline'
+              <Button className='w-full' type='submit' variant='outline'>
+                Entrar com Google
+              </Button>
+            </form>
+            <form
+              action={async () => {
+                'use server'
+                await signIn('github')
+              }}
+              className='inline-flex w-full items-center justify-center'
             >
-              Entrar com Github
-            </Button>
+              <Button className='w-full' type='submit' variant='outline'>
+                Entrar com Github
+              </Button>
+            </form>
           </CardContent>
         </Card>
-      </form>
+      </div>
     </div>
   )
 }
