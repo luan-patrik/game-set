@@ -53,50 +53,45 @@ export const ExplorerOption = () => {
   }
 
   return (
-    <div className='rounded p-2'>
-      <div className='flex w-full flex-col gap-2'>
-        <div className='flex items-center border shadow-xs'>
-          <ExplorerSearchConfigInput
-            inputValue={inputValue}
-            handleInputChange={handleInputChange}
-          />
-          <ExplorerGameFilter
-            selectedCategories={selectedCategories}
-            toggleCategory={handleCategoriesChange}
-            multiple={false}
-            buttonText='Filtrar'
-            buttonIcon={<FunnelIcon className='h-4 w-4' />}
-            width='w-64'
-            clearable={true}
-            showSelectedCheck={true}
-          />
-        </div>
-
-        {selectedCategories.length > 0 && (
-          <div className='flex flex-wrap gap-2'>
-            {selectedCategories.map((category) => (
-              <Badge
-                key={category}
-                variant='outline'
-                className='bg bg-background flex items-center gap-1 border-2'
-              >
-                {category}
-                <button
-                  className='text-muted-foreground hover:text-foreground focus:outline-none'
-                  onClick={() =>
-                    handleCategoriesChange(
-                      selectedCategories.filter((c) => c !== category),
-                    )
-                  }
-                  aria-label={`Remover categoria ${category}`}
-                >
-                  <X size={14} />
-                </button>
-              </Badge>
-            ))}
-          </div>
-        )}
+    <div className='flex w-full flex-col gap-2'>
+      <div className='flex items-center border shadow-xs'>
+        <ExplorerSearchConfigInput
+          inputValue={inputValue}
+          handleInputChange={handleInputChange}
+        />
+        <ExplorerGameFilter
+          selectedCategories={selectedCategories}
+          toggleCategory={handleCategoriesChange}
+          buttonIcon={<FunnelIcon className='h-4 w-4' />}
+          buttonClassName='border-none'
+          multiple={true}
+        />
       </div>
+
+      {selectedCategories.length > 0 && (
+        <div className='flex flex-wrap gap-2'>
+          {selectedCategories.map((category) => (
+            <Badge
+              key={category}
+              variant='outline'
+              className='bg bg-background flex items-center gap-1 border-2'
+            >
+              {category}
+              <button
+                className='text-muted-foreground hover:text-foreground focus:outline-none'
+                onClick={() =>
+                  handleCategoriesChange(
+                    selectedCategories.filter((c) => c !== category),
+                  )
+                }
+                aria-label={`Remover categoria ${category}`}
+              >
+                <X size={14} />
+              </button>
+            </Badge>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

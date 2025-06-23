@@ -19,10 +19,9 @@ interface ExplorerGameFilterProps {
   toggleCategory: (category: string | string[] | null) => void
   placeholder?: string
   buttonText?: string
-  width?: string
+  align?: 'end' | 'center' | 'start' | undefined
+  buttonClassName?: string
   disabled?: boolean
-  clearable?: boolean
-  showSelectedCheck?: boolean
   multiple?: boolean
   buttonIcon?: React.ReactNode
 }
@@ -37,7 +36,8 @@ export const ExplorerGameFilter = ({
   toggleCategory,
   placeholder = 'Pesquisar jogos...',
   buttonText = 'Filtrar',
-  width = 'w-64',
+  align = 'end',
+  buttonClassName,
   disabled = false,
   multiple = false,
   buttonIcon,
@@ -122,15 +122,18 @@ export const ExplorerGameFilter = ({
       <PopoverTrigger asChild>
         <Button
           variant='outline'
-          className='gap-2 rounded-md border-none shadow-none'
+          className={cn(
+            'items-center justify-center gap-2 overflow-hidden rounded-md shadow-none',
+            buttonClassName,
+          )}
           disabled={disabled}
         >
           {buttonIcon}
-          {buttonText}
+          <span className='w-full max-w-fit truncate'>{buttonText}</span>
           <ChevronDownIcon className='size-4' />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align='end' className={cn('p-0', width)}>
+      <PopoverContent align={align} className='w-64 p-0'>
         <Command
           filter={(value, search) => {
             const normalizedValue = value.toLowerCase()

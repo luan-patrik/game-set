@@ -182,22 +182,20 @@ const MultiFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
             ({ file, progress, key, isPrivate: fileIsPrivate, tag }, i) => (
               <div
                 key={i}
-                className='border-muted flex h-28 w-full flex-col justify-center rounded border px-4 py-2'
+                className='border-muted flex h-auto w-full flex-col justify-center rounded border px-4 py-4'
               >
                 <div className='text-foreground flex items-center gap-2'>
-                  <div className='flex flex-col items-start gap-2'>
-                    <div className='flex items-center gap-2'>
+                  <div className='flex w-full flex-col items-start gap-2 overflow-hidden'>
+                    <div className='flex w-full items-center gap-2'>
                       <FileIcon size='30' className='shrink-0' />
-                      <div className='min-w-0 text-sm'>
-                        <div className='overflow-hidden overflow-ellipsis whitespace-nowrap'>
-                          {file.name}
-                        </div>
+                      <div className='overflow-hidden text-sm'>
+                        <div className='truncate'>{file.name}</div>
                         <div className='text-foreground text-xs'>
                           {formatFileSize(file.size)}
                         </div>
                       </div>
                     </div>
-                    <div className='flex items-center gap-4'>
+                    <div className='flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-4'>
                       <PrivacySwitch
                         isPrivate={fileIsPrivate}
                         disabled={progress !== 'PENDING'}
@@ -217,12 +215,12 @@ const MultiFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                           onUpdateTag(key, selected as string | null)
                         }
                         buttonText={tag || 'Selecione um jogo...'}
-                        width='12.5rem'
+                        buttonClassName='border max-w-full justify-between w-fit'
                         disabled={progress !== 'PENDING'}
+                        align='start'
                       />
                     </div>
                   </div>
-
                   <div className='grow' />
                   <div className='flex w-12 justify-end text-xs'>
                     {progress === 'PENDING' ? (
