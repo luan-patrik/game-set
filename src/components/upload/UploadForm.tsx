@@ -6,11 +6,7 @@ import { useEdgeStore } from '../providers/EdgeStoreProvider'
 import { Button } from '../ui/button'
 import { MultiFileDropzone, type FileState } from './MultiFileDropzone'
 
-interface UploadFormProps {
-  onUploadSuccess?: () => void
-}
-
-export const UploadForm = ({ onUploadSuccess }: UploadFormProps) => {
+export const UploadForm = () => {
   const [fileStates, setFileStates] = useState<FileState[]>([])
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
@@ -22,6 +18,17 @@ export const UploadForm = ({ onUploadSuccess }: UploadFormProps) => {
       const fileState = newFileStates.find((fileState) => fileState.key === key)
       if (fileState) {
         fileState.progress = progress
+      }
+      return newFileStates
+    })
+  }
+
+  const handleUpdateTag = (key: string, gameName: string | null) => {
+    setFileStates((prevFileStates) => {
+      const newFileStates = structuredClone(prevFileStates)
+      const fileState = newFileStates.find((fs) => fs.key === key)
+      if (fileState) {
+        fileState.tag = gameName
       }
       return newFileStates
     })
@@ -40,12 +47,29 @@ export const UploadForm = ({ onUploadSuccess }: UploadFormProps) => {
       return
     }
 
+    const filesWithoutGameTag = filesToUpload.filter(
+      (fileState) => !fileState.tag,
+    )
+    if (filesWithoutGameTag.length > 0) {
+      setError(`Selecione uma tag de jogo para todos os arquivos pendentes.`)
+      setIsUploading(false)
+      setFileStates((prevStates) =>
+        prevStates.map((fs) =>
+          filesWithoutGameTag.some((fwt) => fwt.key === fs.key)
+            ? { ...fs, progress: 'ERROR' }
+            : fs,
+        ),
+      )
+      return
+    }
+
     const uploadPromises = filesToUpload.map(async (fileState) => {
       try {
         const response = await edgestore.publicFiles.upload({
           file: fileState.file,
           input: { type: 'post' },
           onProgressChange: async (progress) => {
+            updateFileProgress(fileState.key, progress)
             if (progress === 100) {
               await new Promise((resolve) => setTimeout(resolve, 1000))
               updateFileProgress(fileState.key, 'COMPLETE')
@@ -57,7 +81,8 @@ export const UploadForm = ({ onUploadSuccess }: UploadFormProps) => {
           fileUrl: response.url,
           name: fileState.file.name,
           size: fileState.file.size,
-          private: false,
+          isPrivate: fileState.isPrivate,
+          tag: fileState.tag as string,
         })
 
         if (!result.success) {
@@ -73,10 +98,6 @@ export const UploadForm = ({ onUploadSuccess }: UploadFormProps) => {
 
     await Promise.all(uploadPromises)
     setIsUploading(false)
-
-    if (onUploadSuccess && filesToUpload.length > 0 && !error) {
-      onUploadSuccess()
-    }
   }
 
   const pendingFilesCount = fileStates.filter(
@@ -98,11 +119,19 @@ export const UploadForm = ({ onUploadSuccess }: UploadFormProps) => {
           setFileStates(files)
         }}
         onFilesAdded={(addedFiles) => {
-          setFileStates((prev) => [...prev, ...addedFiles])
+          setFileStates((prev) => [
+            ...prev,
+            ...addedFiles.map((fileState) => ({
+              ...fileState,
+              isPrivate: false,
+              tag: null,
+            })),
+          ])
         }}
+        onUpdateTag={handleUpdateTag}
       />
       <Button
-        className='w-full'
+        className='mt-2 w-full'
         onClick={onSubmit}
         disabled={isUploading || pendingFilesCount === 0}
       >

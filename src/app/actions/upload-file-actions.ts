@@ -26,7 +26,7 @@ export const uploadFile = async (data: UploadCreationRequest) => {
       }
     }
 
-    const { name, fileUrl, size, private: isPrivate } = validation.data
+    const { name, fileUrl, size, tag, isPrivate } = validation.data
 
     const fileCount = await prisma.fileSettings.count({
       where: {
@@ -42,8 +42,9 @@ export const uploadFile = async (data: UploadCreationRequest) => {
       data: {
         name,
         fileUrl,
-        private: isPrivate,
         size,
+        tag,
+        isPrivate,
         authorId: session.user.id,
       },
     })

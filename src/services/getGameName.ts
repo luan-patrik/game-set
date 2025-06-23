@@ -31,6 +31,7 @@ export const getGameName = async (
         'Content-Type': 'text/plain',
       },
       body: `search "${searchTerm}"; fields name; limit 10;`,
+      cache: 'force-cache',
       next: {
         revalidate: 3600,
       },

@@ -2,33 +2,37 @@ import { GlobeIcon, LockIcon } from 'lucide-react'
 import { Button } from './button'
 
 interface PrivacySwitchProps {
-  isPublic: boolean
-  setIsPublic: (isPublic: boolean) => void
+  isPrivate: boolean
+  setIsPrivate: (isPrivate: boolean) => void
+  disabled?: boolean
 }
 
 export const PrivacySwitch = ({
-  isPublic,
-  setIsPublic,
+  isPrivate = false,
+  setIsPrivate,
+  disabled,
 }: PrivacySwitchProps) => {
   return (
-    <div className='bg-muted flex rounded-lg border p-1'>
+    <div className='bg-muted flex rounded-lg border p-0.5'>
       <Button
-        variant={!isPublic ? 'default' : 'ghost'}
+        variant={!isPrivate ? 'default' : 'ghost'}
         size='sm'
-        onClick={() => setIsPublic(false)}
-        className='flex-1 gap-2'
-      >
-        <LockIcon className='size-4' />
-        Private
-      </Button>
-      <Button
-        variant={isPublic ? 'default' : 'ghost'}
-        size='sm'
-        onClick={() => setIsPublic(true)}
-        className='flex-1 gap-2'
+        onClick={() => setIsPrivate(false)}
+        disabled={disabled}
+        className='flex-1 gap-2 text-xs'
       >
         <GlobeIcon className='size-4' />
-        Public
+        Público
+      </Button>
+      <Button
+        variant={isPrivate ? 'default' : 'ghost'}
+        size='sm'
+        onClick={() => setIsPrivate(true)}
+        disabled={disabled}
+        className='flex-1 gap-2 text-xs'
+      >
+        <LockIcon className='size-4' />
+        Privado
       </Button>
     </div>
   )

@@ -1,6 +1,7 @@
+import { cn } from '@/lib/utils'
 import { getGameName } from '@/services/getGameName'
 import { debounce } from 'lodash'
-import { CheckCheck, ChevronDown, Filter, Loader2 } from 'lucide-react'
+import { CheckCheckIcon, ChevronDownIcon, Loader2 } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { Button } from './ui/button'
 import {
@@ -14,8 +15,16 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
 interface ExplorerGameFilterProps {
-  selectedCategories: string[]
-  toggleCategory: (category: string) => void
+  selectedCategories: string | string[] | null
+  toggleCategory: (category: string | string[] | null) => void
+  placeholder?: string
+  buttonText?: string
+  width?: string
+  disabled?: boolean
+  clearable?: boolean
+  showSelectedCheck?: boolean
+  multiple?: boolean
+  buttonIcon?: React.ReactNode
 }
 
 interface GameProps {
@@ -26,7 +35,14 @@ interface GameProps {
 export const ExplorerGameFilter = ({
   selectedCategories,
   toggleCategory,
+  placeholder = 'Pesquisar jogos...',
+  buttonText = 'Filtrar',
+  width = 'w-64',
+  disabled = false,
+  multiple = false,
+  buttonIcon,
 }: ExplorerGameFilterProps) => {
+  const [open, setOpen] = useState(false)
   const [searchResults, setSearchResults] = useState<GameProps[]>([])
   const [hasSearched, setHasSearched] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
@@ -75,19 +91,46 @@ export const ExplorerGameFilter = ({
     debouncedFetch(value)
   }
 
+  const handleItemSelect = (gameName: string) => {
+    if (multiple) {
+      const currentSelection = Array.isArray(selectedCategories)
+        ? selectedCategories
+        : []
+      if (currentSelection.includes(gameName)) {
+        toggleCategory(currentSelection.filter((item) => item !== gameName))
+      } else {
+        toggleCategory([...currentSelection, gameName])
+      }
+    } else {
+      toggleCategory(gameName)
+      setOpen(false)
+    }
+  }
+
+  const isItemSelected = (item: string) => {
+    if (multiple) {
+      return (
+        Array.isArray(selectedCategories) && selectedCategories.includes(item)
+      )
+    } else {
+      return selectedCategories === item
+    }
+  }
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant='outline'
           className='gap-2 rounded-md border-none shadow-none'
+          disabled={disabled}
         >
-          <Filter className='h-4 w-4' />
-          Filtrar
-          <ChevronDown className='h-4 w-4' />
+          {buttonIcon}
+          {buttonText}
+          <ChevronDownIcon className='size-4' />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align='end' className='w-64 p-0'>
+      <PopoverContent align='end' className={cn('p-0', width)}>
         <Command
           filter={(value, search) => {
             const normalizedValue = value.toLowerCase()
@@ -98,9 +141,10 @@ export const ExplorerGameFilter = ({
           }}
         >
           <CommandInput
-            placeholder='Pesquisar jogos...'
+            placeholder={placeholder}
             value={searchTerm}
             onValueChange={handleSearchChange}
+            disabled={disabled}
           />
           <CommandList>
             {isLoading ? (
@@ -122,12 +166,13 @@ export const ExplorerGameFilter = ({
                       <CommandItem
                         className='flex items-center justify-between'
                         key={game.id}
-                        value={game.name.toLowerCase().trim()}
-                        onSelect={() => toggleCategory(game.name)}
+                        value={game.name}
+                        onSelect={() => handleItemSelect(game.name)}
                       >
                         <span>{game.name}</span>
-                        {selectedCategories.includes(game.name) && (
-                          <CheckCheck size={14} className='text-primary' />
+
+                        {isItemSelected(game.name) && (
+                          <CheckCheckIcon className='text-primary size-3.5' />
                         )}
                       </CommandItem>
                     ))}

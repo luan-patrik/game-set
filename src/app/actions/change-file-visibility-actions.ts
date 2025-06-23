@@ -24,7 +24,7 @@ export const changeFileVisibility = async (data: {
         id,
       },
       data: {
-        private: isPrivate,
+        isPrivate,
       },
     })
 

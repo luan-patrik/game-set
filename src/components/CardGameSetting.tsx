@@ -1,17 +1,21 @@
 import { getFileContent } from '@/services/getFileContent'
 import { getDownloadUrl } from '@edgestore/react/utils'
-import { SaveIcon, User2 } from 'lucide-react'
+import { SaveIcon, User2Icon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { DialogViewConfig } from './DialogViewConfig'
 import { Avatar, AvatarFallback } from './ui/avatar'
 import { Badge } from './ui/badge'
-import { Button } from './ui/button'
+import { buttonVariants } from './ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 interface CardGameSettingProps {
   id: string
+  authorId: string
   name: string
   fileUrl: string
+  size: number
+  createdAt: Date
+  tag: string
   author: {
     name: string | null
     image: string | null
@@ -20,9 +24,13 @@ interface CardGameSettingProps {
 
 export const CardGameSetting = async ({
   id,
+  authorId,
   name: fileName,
   fileUrl,
-  author: { name, image },
+  tag,
+  size,
+  createdAt,
+  author,
 }: CardGameSettingProps) => {
   const content = await getFileContent(fileUrl)
 
@@ -41,19 +49,23 @@ export const CardGameSetting = async ({
     <Card key={id} className='gap-8'>
       <CardHeader className='gap-0'>
         <div className='flex items-start justify-between gap-1 overflow-x-hidden'>
-          <div className='overflow-x-hidden'>
-            <Badge variant='outline' className='mb-2'>
-              War Thunder
+          <div className='flex flex-col items-start overflow-x-hidden'>
+            <Badge
+              variant={'outline'}
+              className='block w-full max-w-fit truncate text-xs'
+            >
+              {tag}
             </Badge>
-            <CardTitle className='overflow-hidden text-ellipsis whitespace-nowrap'>
+            <CardTitle className='w-full max-w-fit truncate'>
               {fileName}
             </CardTitle>
           </div>
-          <Button variant='ghost' size='icon' asChild>
-            <Link href={getDownloadUrl(fileUrl, fileName)}>
-              <SaveIcon className='size-4' />
-            </Link>
-          </Button>
+          <Link
+            href={getDownloadUrl(fileUrl, fileName)}
+            className={buttonVariants({ variant: 'ghost', size: 'icon' })}
+          >
+            <SaveIcon className='size-4' />
+          </Link>
         </div>
       </CardHeader>
       <CardContent>
@@ -67,10 +79,10 @@ export const CardGameSetting = async ({
       <CardFooter className='flex justify-between gap-1'>
         <div className='flex items-center gap-2 overflow-x-hidden'>
           <Avatar className='size-6'>
-            {image ? (
+            {author.image ? (
               <Image
-                src={image}
-                alt={name || 'Avatar'}
+                src={author.image}
+                alt={author.name || 'Avatar'}
                 width={24}
                 height={24}
                 className='rounded-full'
@@ -78,15 +90,22 @@ export const CardGameSetting = async ({
               />
             ) : (
               <AvatarFallback>
-                <User2 />
+                <User2Icon />
               </AvatarFallback>
             )}
           </Avatar>
           <span className='text-muted-foreground overflow-x-hidden text-sm text-ellipsis whitespace-nowrap'>
-            {name}
+            {author.name}
           </span>
         </div>
-        <DialogViewConfig fileName={fileName} content={renderContent()} />
+        <DialogViewConfig
+          authorId={authorId}
+          fileName={fileName}
+          size={size}
+          createdAt={createdAt}
+          content={renderContent()}
+          author={author}
+        />
       </CardFooter>
     </Card>
   )

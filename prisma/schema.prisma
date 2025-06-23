@@ -49,7 +49,6 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  role          Role      @default(USER)
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
@@ -60,12 +59,13 @@ model User {
 }
 
 model FileSettings {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  authorId String  @db.ObjectId
-  fileUrl  String  @unique
-  name     String
-  size     Int
-  private  Boolean @default(false)
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  authorId  String  @db.ObjectId
+  fileUrl   String  @unique
+  name      String
+  size      Int
+  isPrivate Boolean @default(false)
+  tag       String
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
@@ -73,11 +73,6 @@ model FileSettings {
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@map("filesettings")
-}
-
-enum Role {
-  ADMIN
-  USER
 }
 
 model VerificationToken {

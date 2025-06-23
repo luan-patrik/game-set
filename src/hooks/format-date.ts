@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 
 const useFormatDate = (locale = ptBR) => {
   const formatDate = useCallback(
-    (date: string | number | Date, dateFormat = 'hh:mm dd/MM/yyyy') => {
+    (date: string | number | Date, dateFormat = 'HH:mm dd/MM/yyyy') => {
       if (!date) return ''
       return format(date, dateFormat, { locale })
     },

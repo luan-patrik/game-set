@@ -3,14 +3,16 @@ import prisma from '@/lib/db'
 export async function getAllFileSetting() {
   return prisma.fileSettings.findMany({
     where: {
-      private: false,
+      isPrivate: false,
     },
     select: {
       id: true,
       authorId: true,
       name: true,
-      private: true,
       fileUrl: true,
+      size: true,
+      createdAt: true,
+      tag: true,
       author: {
         select: {
           name: true,

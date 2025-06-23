@@ -1,6 +1,6 @@
 'use client'
 
-import { X } from 'lucide-react'
+import { FunnelIcon, X } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import { ExplorerGameFilter } from './ExplorerGameFilter'
@@ -34,21 +34,15 @@ export const ExplorerOption = () => {
     updateSearchParams(value)
   }
 
-  const toggleCategory = (category: string) => {
+  const handleCategoriesChange = (categories: string | string[] | null) => {
     const params = new URLSearchParams(searchParams.toString())
 
-    const alreadySelected = selectedCategories.includes(category)
-    if (alreadySelected) {
-      const newParams = selectedCategories
-        .filter((c) => c !== category)
-        .map((c) => ['category', c])
+    params.delete('category')
 
-      params.delete('category')
-      newParams.forEach(([key, value]) => {
-        params.append(key, value)
-      })
-    } else {
-      params.append('category', category)
+    if (Array.isArray(categories)) {
+      categories.forEach((cat) => params.append('category', cat))
+    } else if (typeof categories === 'string') {
+      params.append('category', categories)
     }
 
     if (inputValue) {
@@ -68,7 +62,13 @@ export const ExplorerOption = () => {
           />
           <ExplorerGameFilter
             selectedCategories={selectedCategories}
-            toggleCategory={toggleCategory}
+            toggleCategory={handleCategoriesChange}
+            multiple={false}
+            buttonText='Filtrar'
+            buttonIcon={<FunnelIcon className='h-4 w-4' />}
+            width='w-64'
+            clearable={true}
+            showSelectedCheck={true}
           />
         </div>
 
@@ -83,7 +83,11 @@ export const ExplorerOption = () => {
                 {category}
                 <button
                   className='text-muted-foreground hover:text-foreground focus:outline-none'
-                  onClick={() => toggleCategory(category)}
+                  onClick={() =>
+                    handleCategoriesChange(
+                      selectedCategories.filter((c) => c !== category),
+                    )
+                  }
                   aria-label={`Remover categoria ${category}`}
                 >
                   <X size={14} />

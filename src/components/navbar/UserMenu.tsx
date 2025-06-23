@@ -28,7 +28,7 @@ export const UserMenu = ({ user, session }: UserMenuProps) => {
           className='ring-foreground ring-offset-background h-10 w-10 ring-2'
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align='end'>
+      <DropdownMenuContent align='end' className='z-101'>
         <DropdownMenuItem asChild>
           <Link prefetch={true} href={'/'}>
             Explorar

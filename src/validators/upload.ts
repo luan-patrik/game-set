@@ -4,7 +4,8 @@ export const uploadCreationSchema = z.object({
   name: z.string(),
   fileUrl: z.string().url(),
   size: z.number(),
-  private: z.boolean().default(false),
+  isPrivate: z.boolean().default(false),
+  tag: z.string().min(1, 'Adicione uma tag.'),
 })
 
 export const deleteUploadedSchema = z.object({
