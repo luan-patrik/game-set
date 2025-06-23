@@ -1,21 +1,14 @@
 import NotFound from '@/app/not-found'
 import { CardGameSetting } from '@/components/CardGameSetting'
-import { auth } from '@/lib/auth'
 import { getUserSettingsList } from '@/services/getUserSettingsList'
-import { redirect } from 'next/navigation'
 
 export default async function UserPage({
   params,
 }: {
   params: Promise<{ name: string; id: string }>
 }) {
-  const session = await auth()
   const { name, id } = await params
   const decodedName = decodeURIComponent(name)
-
-  if (session?.user.id === id && session.user.name === decodedName) {
-    redirect('/minhas-configuracoes')
-  }
 
   const userSettings = await getUserSettingsList(decodedName, id)
 
