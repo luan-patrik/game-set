@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog'
 import useFormatDate from '@/hooks/format-date'
 import { formatFileSize } from '@edgestore/react/utils'
+import { VariantProps } from 'class-variance-authority'
 import { EyeIcon, User2Icon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -22,6 +23,7 @@ interface DialogViewConfigProps {
   size: number
   createdAt: Date | null
   content: string
+  buttonVariant?: VariantProps<typeof buttonVariants>['variant']
   author: {
     id: string
     name: string | null
@@ -34,6 +36,7 @@ export const DialogViewConfig = ({
   size,
   createdAt,
   content,
+  buttonVariant,
   author,
 }: DialogViewConfigProps) => {
   const { formatDate } = useFormatDate()
@@ -41,7 +44,7 @@ export const DialogViewConfig = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant='ghost' size='sm' className='h-9'>
+        <Button variant={buttonVariant} size='sm' className='h-9'>
           <EyeIcon className='mr-1 size-4' />
           Ver
         </Button>

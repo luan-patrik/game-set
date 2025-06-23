@@ -5,9 +5,10 @@ interface CardGameSettingProps {
   id: string
   name: string
   fileUrl: string
-  size: number
-  createdAt: Date | null
   tag: string
+  size: number
+  isPrivate: boolean
+  createdAt: Date | null
   author: {
     id: string
     name: string | null
@@ -22,6 +23,7 @@ export const CardGameSetting = async ({
   fileUrl,
   tag,
   size,
+  isPrivate,
   createdAt,
   author,
   isOwnerPage = false,
@@ -46,6 +48,7 @@ export const CardGameSetting = async ({
       fileUrl={fileUrl}
       tag={tag}
       size={size}
+      isPrivate={isPrivate}
       createdAt={createdAt}
       author={author}
       content={renderContent()}

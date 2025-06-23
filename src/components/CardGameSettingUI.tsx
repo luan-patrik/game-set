@@ -15,6 +15,7 @@ interface CardGameSettingUIProps {
   fileUrl: string
   tag: string
   size: number
+  isPrivate: boolean
   createdAt: Date | null
   author: {
     id: string
@@ -31,6 +32,7 @@ export const CardGameSettingUI = async ({
   fileUrl,
   tag,
   size,
+  isPrivate,
   createdAt,
   author,
   content,
@@ -71,9 +73,14 @@ export const CardGameSettingUI = async ({
 
       <CardFooter className='flex justify-between gap-1'>
         {isOwnerPage && isOwner ? (
-          <div className='flex w-full justify-end'>
-            <DeleteButton id={id} fileUrl={fileUrl} />
-          </div>
+          <>
+            <Badge variant={isPrivate ? 'secondary' : 'default'}>
+              {isPrivate ? 'Privado' : 'Público'}
+            </Badge>
+            <div className='flex w-full justify-end'>
+              <DeleteButton id={id} fileUrl={fileUrl} />
+            </div>
+          </>
         ) : (
           <Link
             href={`/perfil/${author.name}/${author.id}`}
@@ -106,6 +113,7 @@ export const CardGameSettingUI = async ({
           createdAt={createdAt}
           content={content}
           author={author}
+          buttonVariant={isOwner && isOwnerPage ? 'default' : 'outline'}
         />
       </CardFooter>
     </Card>
