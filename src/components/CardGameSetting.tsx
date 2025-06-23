@@ -14,7 +14,7 @@ interface CardGameSettingProps {
   name: string
   fileUrl: string
   size: number
-  createdAt: Date
+  createdAt: Date | null
   tag: string
   author: {
     name: string | null

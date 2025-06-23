@@ -10,18 +10,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import useFormatDate from '@/hooks/format-date'
+import { formatFileSize } from '@edgestore/react/utils'
 import { EyeIcon, User2Icon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Avatar, AvatarFallback } from './ui/avatar'
-import { formatFileSize } from '@edgestore/react/utils'
-import useFormatDate from '@/hooks/format-date'
 
 interface DialogViewConfigProps {
   authorId: string
   fileName: string
   size: number
-  createdAt: Date
+  createdAt: Date | null
   content: string
   author: {
     name: string | null
@@ -37,7 +37,7 @@ export const DialogViewConfig = ({
   content,
   author,
 }: DialogViewConfigProps) => {
-    const { formatDate } = useFormatDate()
+  const { formatDate } = useFormatDate()
 
   return (
     <Dialog>
@@ -87,7 +87,9 @@ export const DialogViewConfig = ({
             </Avatar>
             <span>{author?.name}</span>
           </Link>
-          <span className='text-xs'>{formatFileSize(size)} • {formatDate(createdAt)}</span>
+          <span className='text-xs'>
+            {formatFileSize(size)} • {createdAt && formatDate(createdAt)}
+          </span>
         </DialogFooter>
       </DialogContent>
     </Dialog>
