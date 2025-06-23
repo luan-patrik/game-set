@@ -22,7 +22,6 @@ interface DialogViewConfigProps {
   size: number
   createdAt: Date | null
   content: string
-  perfil: string
   author: {
     id: string
     name: string | null
@@ -35,7 +34,6 @@ export const DialogViewConfig = ({
   size,
   createdAt,
   content,
-  perfil,
   author,
 }: DialogViewConfigProps) => {
   const { formatDate } = useFormatDate()
@@ -67,7 +65,7 @@ export const DialogViewConfig = ({
         </DialogDescription>
         <DialogFooter className='flex-row items-center justify-between border-t px-6 py-4 text-base font-semibold sm:justify-between'>
           <Link
-            href={perfil}
+            href={`/perfil/${author.name}/${author.id}`}
             className='flex items-center gap-2'
           >
             <Avatar className='size-8'>

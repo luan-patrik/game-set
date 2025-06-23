@@ -40,9 +40,6 @@ export const CardGameSettingUI = async ({
 
   const isOwner = session?.user.id === author.id
 
-  const isOwnerPerfil =
-    session?.user.id === author.id && session.user.name === author.name
-
   return (
     <Card key={id} className='gap-8'>
       <CardHeader className='gap-0'>
@@ -78,7 +75,10 @@ export const CardGameSettingUI = async ({
             <DeleteButton id={id} fileUrl={fileUrl} />
           </div>
         ) : (
-          <div className='flex items-center gap-2 overflow-x-hidden'>
+          <Link
+            href={`/perfil/${author.name}/${author.id}`}
+            className='flex items-center gap-2 overflow-x-hidden'
+          >
             <Avatar className='size-6'>
               {author.image ? (
                 <Image
@@ -98,18 +98,13 @@ export const CardGameSettingUI = async ({
             <span className='text-muted-foreground overflow-x-hidden text-sm text-ellipsis whitespace-nowrap'>
               {author.name}
             </span>
-          </div>
+          </Link>
         )}
         <DialogViewConfig
           fileName={fileName}
           size={size}
           createdAt={createdAt}
           content={content}
-          perfil={
-            isOwnerPerfil
-              ? '/minhas-configuracoes'
-              : `/perfil/${author.name}/${author.id}`
-          }
           author={author}
         />
       </CardFooter>
