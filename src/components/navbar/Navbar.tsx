@@ -19,7 +19,9 @@ export const Navbar = async () => {
             width={50}
             height={50}
           />
-          <span className='appearance-none text-xl font-semibold'>GameSet</span>
+          <span className='hidden appearance-none text-xl font-semibold sm:inline-block'>
+            GameSet
+          </span>
         </Link>
         {session?.user ? (
           <UserMenu user={session.user} session={session} />

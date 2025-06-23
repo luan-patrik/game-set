@@ -87,7 +87,7 @@ export const DialogViewConfig = ({
             </Avatar>
             <span>{author?.name}</span>
           </Link>
-          <span className='text-xs'>
+          <span className='w-full max-w-fit text-center text-xs'>
             {formatFileSize(size)} • {createdAt && formatDate(createdAt)}
           </span>
         </DialogFooter>
