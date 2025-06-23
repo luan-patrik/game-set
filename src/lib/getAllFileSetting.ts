@@ -7,7 +7,6 @@ export async function getAllFileSetting() {
     },
     select: {
       id: true,
-      authorId: true,
       name: true,
       fileUrl: true,
       size: true,
@@ -15,6 +14,7 @@ export async function getAllFileSetting() {
       tag: true,
       author: {
         select: {
+          id: true,
           name: true,
           image: true,
         },

@@ -18,23 +18,24 @@ import Link from 'next/link'
 import { Avatar, AvatarFallback } from './ui/avatar'
 
 interface DialogViewConfigProps {
-  authorId: string
   fileName: string
   size: number
   createdAt: Date | null
   content: string
+  perfil: string
   author: {
+    id: string
     name: string | null
     image: string | null
   }
 }
 
 export const DialogViewConfig = ({
-  authorId,
   fileName,
   size,
   createdAt,
   content,
+  perfil,
   author,
 }: DialogViewConfigProps) => {
   const { formatDate } = useFormatDate()
@@ -42,7 +43,7 @@ export const DialogViewConfig = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant='ghost' size='sm' className='cursor-pointer'>
+        <Button variant='ghost' size='sm' className='h-9'>
           <EyeIcon className='mr-1 size-4' />
           Ver
         </Button>
@@ -66,7 +67,7 @@ export const DialogViewConfig = ({
         </DialogDescription>
         <DialogFooter className='flex-row items-center justify-between border-t px-6 py-4 text-base font-semibold sm:justify-between'>
           <Link
-            href={`/${author?.name}/${authorId}`}
+            href={perfil}
             className='flex items-center gap-2'
           >
             <Avatar className='size-8'>
