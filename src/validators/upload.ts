@@ -1,24 +1,25 @@
 import { z } from 'zod'
 
-export const UploadValidator = z.object({
+export const uploadCreationSchema = z.object({
   name: z.string(),
   fileUrl: z.string().url(),
   size: z.number(),
-  private: z.boolean().default(false),
+  isPrivate: z.boolean().default(false),
+  tag: z.string().min(1, 'Adicione uma tag.'),
 })
 
-export const DeleteUploadValidator = z.object({
+export const deleteUploadedSchema = z.object({
   id: z.string(),
   fileUrl: z.string().url(),
 })
 
-export const ChangeUploadVisibility = z.object({
+export const changeUploadedVisibility = z.object({
   id: z.string(),
   isPrivate: z.boolean().default(false),
 })
 
-export type UploadCreationRequest = z.infer<typeof UploadValidator>
-export type UploadDeleteRequest = z.infer<typeof DeleteUploadValidator>
+export type UploadCreationRequest = z.infer<typeof uploadCreationSchema>
+export type UploadDeleteRequest = z.infer<typeof deleteUploadedSchema>
 export type UploadChangeVisibilityRequest = z.infer<
-  typeof ChangeUploadVisibility
+  typeof changeUploadedVisibility
 >
