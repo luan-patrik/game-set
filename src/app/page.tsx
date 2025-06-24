@@ -3,22 +3,20 @@ import { ExplorerOption } from '@/components/ExplorerOption'
 import { getSettingsList } from '@/services/getSettingsList'
 import { Suspense } from 'react'
 
-interface HomePageProps {
-  searchParams: {
-    search?: string
-    category?: string | string[]
-  }
-}
-export default async function Home({ searchParams }: HomePageProps) {
-  const searchText = searchParams.search?.trim()
-  const categories = searchParams.category
-  const categoriesArray = Array.isArray(categories)
-    ? categories
-    : categories
-      ? [categories]
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const { search, category } = await searchParams
+
+  const categoriesArray = Array.isArray(category)
+    ? category
+    : category
+      ? [category]
       : []
 
-  const data = await getSettingsList(searchText, categoriesArray)
+  const data = await getSettingsList(search as string, categoriesArray)
 
   return (
     <div className='mt-4 space-y-4'>
