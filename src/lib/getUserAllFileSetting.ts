@@ -37,6 +37,9 @@ export async function getUserAllFileSetting(name: string, id: string) {
             { isPrivate: false },
           ],
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       },
     },
   })

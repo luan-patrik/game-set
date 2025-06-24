@@ -16,6 +16,7 @@ import {
 import { Trash2Icon } from 'lucide-react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
+import { useEdgeStore } from './providers/EdgeStoreProvider'
 import { Button, buttonVariants } from './ui/button'
 
 export const DeleteButton = ({
@@ -25,15 +26,17 @@ export const DeleteButton = ({
   id: string
   fileUrl: string
 }) => {
+  const { edgestore } = useEdgeStore()
   const [isPending, startTransition] = useTransition()
 
   const handleDelete = () => {
     startTransition(async () => {
-      const result = await deleteFile({ id, fileUrl })
-      if (result.success) {
+      try {
+        await edgestore.publicFiles.delete({ url: fileUrl })
+        await deleteFile({ id, fileUrl })
         toast.success('Configuração excluída com sucesso!')
-      } else {
-        toast.error(result.error || 'Falha ao excluir a configuração.')
+      } catch (error) {
+        toast.error('Falha ao excluir a configuração.')
       }
     })
   }
