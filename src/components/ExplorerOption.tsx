@@ -1,8 +1,9 @@
 'use client'
 
+import { debounce } from 'lodash'
 import { FunnelIcon, X } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { startTransition, useCallback, useEffect, useState } from 'react'
 import { ExplorerGameFilter } from './ExplorerGameFilter'
 import { ExplorerSearchConfigInput } from './ExplorerSearchConfigInput'
 import { Badge } from './ui/badge'
@@ -15,24 +16,32 @@ export const ExplorerOption = () => {
 
   const selectedCategories: string[] = searchParams.getAll('category')
 
-  const updateSearchParams = useCallback(
-    (value: string) => {
+  const debouncedUpdateSearchParams = useCallback(
+    debounce((value: string) => {
       const params = new URLSearchParams(searchParams.toString())
       if (value) {
         params.set('search', value)
       } else {
         params.delete('search')
       }
-      router.push(`?${params.toString()}`, { scroll: false })
-    },
+      startTransition(() => {
+        router.push(`?${params.toString()}`, { scroll: false })
+      })
+    }, 500),
     [router, searchParams],
   )
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setInputValue(value)
-    updateSearchParams(value)
+    debouncedUpdateSearchParams(value)
   }
+
+  useEffect(() => {
+    return () => {
+      debouncedUpdateSearchParams.cancel()
+    }
+  }, [debouncedUpdateSearchParams])
 
   const handleCategoriesChange = (categories: string | string[] | null) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -45,11 +54,9 @@ export const ExplorerOption = () => {
       params.append('category', categories)
     }
 
-    if (inputValue) {
-      params.set('search', inputValue)
-    }
-
-    router.push(`?${params.toString()}`)
+    startTransition(() => {
+      router.push(`?${params.toString()}`, { scroll: false })
+    })
   }
 
   return (
