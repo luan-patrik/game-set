@@ -15,7 +15,7 @@ interface CardGameSettingUIProps {
   fileUrl: string
   tag: string
   size: number
-  isPrivate: boolean
+  isPrivate?: boolean
   createdAt: Date | null
   author: {
     id: string
