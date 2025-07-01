@@ -71,7 +71,7 @@ export const SwitchTheme = ({ session }: SwitchThemeProps) => {
               <span className='sr-only'>Mudar tema</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent className='z-101'>
             <DropdownMenuItem
               title='Escuro'
               aria-label='Escuro'
