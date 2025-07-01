@@ -30,6 +30,14 @@ export const UserMenu = ({ user, session }: UserMenuProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='z-101'>
         <DropdownMenuItem asChild>
+          <Link
+            prefetch={true}
+            href={`/perfil/${session?.user.name}/${session?.user.id}`}
+          >
+            Meu perfil
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link prefetch={true} href={'/'}>
             Explorar
           </Link>
