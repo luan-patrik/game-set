@@ -1,284 +1,192 @@
-'use client'
-
 import {
-  CheckCircleIcon,
+  FileUploadActions,
+  FileUploadState,
+  FileWithPreview,
+  formatBytes,
+} from '@/hooks/use-file-upload'
+import {
+  AlertCircleIcon,
   FileIcon,
-  LucideFileWarning,
-  Trash2Icon,
-  UploadCloudIcon,
+  FileUpIcon,
+  GlobeLockIcon,
+  TagIcon,
+  XIcon,
 } from 'lucide-react'
-import * as React from 'react'
-import { useDropzone, type DropzoneOptions } from 'react-dropzone'
-import { twMerge } from 'tailwind-merge'
 import { ExplorerGameFilter } from '../ExplorerGameFilter'
+import { Button } from '../ui/button'
+import { Label } from '../ui/label'
 import { PrivacySwitch } from '../ui/privacy-switch'
 
-const variants = {
-  base: 'relative rounded-md p-4 w-96 max-w-[calc(100vw-1rem)] flex justify-center items-center flex-col cursor-pointer border border-dashed border-ring transition-colors duration-200 ease-in-out',
-  active: 'border',
-  disabled:
-    'bg-gray-200 border-gray-300 cursor-default pointer-events-none bg-opacity-30 dark:bg-gray-700 dark:border-gray-600',
-  accept: 'border border-blue-500 bg-blue-500 bg-opacity-10',
-  reject: 'border border-red-700 bg-red-700 bg-opacity-10',
+interface MultiFileDropzoneProps {
+  files: FileWithPreview[]
+  addFiles: FileUploadActions['addFiles']
+  updateFile: FileUploadActions['updateFile']
+  removeFile: FileUploadActions['removeFile']
+  clearFiles: FileUploadActions['clearFiles']
+  handleDragEnter: FileUploadActions['handleDragEnter']
+  handleDragLeave: FileUploadActions['handleDragLeave']
+  handleDragOver: FileUploadActions['handleDragOver']
+  handleDrop: FileUploadActions['handleDrop']
+  openFileDialog: FileUploadActions['openFileDialog']
+  getInputProps: FileUploadActions['getInputProps']
+  isDragging: FileUploadState['isDragging']
+  errors: FileUploadState['errors']
+  isUploading?: boolean
 }
 
-export type FileState = {
-  file: File
-  key: string // used to identify the file in the progress callback
-  progress: 'PENDING' | 'COMPLETE' | 'ERROR' | number
-  isPrivate: boolean
-  tag: string | null
-}
+export const MultiFileDropzone = ({
+  files,
+  addFiles,
+  updateFile,
+  removeFile,
+  clearFiles,
+  handleDragEnter,
+  handleDragLeave,
+  handleDragOver,
+  handleDrop,
+  openFileDialog,
+  getInputProps,
+  isDragging,
+  errors,
+  isUploading = false,
+}: MultiFileDropzoneProps) => {
+  const maxFiles = 5
+  const maxSize = 128 * 1024
 
-type InputProps = {
-  className?: string
-  value?: FileState[]
-  onChange?: (files: FileState[]) => void | Promise<void>
-  onFilesAdded?: (addedFiles: FileState[]) => void | Promise<void>
-  disabled?: boolean
-  onUpdateTag: (key: string, gameName: string | null) => void
-  dropzoneOptions?: Omit<DropzoneOptions, 'disabled'>
-}
+  return (
+    <div className='flex flex-col gap-2'>
+      <div
+        role='button'
+        onClick={openFileDialog}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+        data-dragging={isDragging || undefined}
+        className='border-input hover:bg-accent/50 data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed p-4 transition-colors has-disabled:pointer-events-none has-disabled:opacity-50 has-[input:focus]:ring-[3px]'
+      >
+        <input
+          {...getInputProps()}
+          className='sr-only'
+          aria-label='Adicionar arquivos'
+        />
 
-const ERROR_MESSAGES = {
-  fileTooLarge(maxSize: number) {
-    return `O arquivo é muito grande. O tamanho máximo é ${formatFileSize(
-      maxSize,
-    )}.`
-  },
-  fileInvalidType() {
-    return 'Tipo de arquivo inválido.'
-  },
-  tooManyFiles(maxFiles: number) {
-    return `Você só pode adicionar ${maxFiles} arquivo(s).`
-  },
-  fileTooSmall(minSize: number) {
-    return `O arquivo é muito pequeno. O tamanho mínimo é ${formatFileSize(
-      minSize,
-    )}.`
-  },
-  fileNotSupported() {
-    return 'Arquivo não suportado.'
-  },
-}
-
-const MultiFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
-  (
-    {
-      dropzoneOptions,
-      value,
-      className,
-      disabled,
-      onFilesAdded,
-      onChange,
-      onUpdateTag,
-    },
-    ref,
-  ) => {
-    const [customError, setCustomError] = React.useState<string>()
-    if (dropzoneOptions?.maxFiles && value?.length) {
-      disabled = disabled ?? value.length >= dropzoneOptions.maxFiles
-    }
-    // dropzone configuration
-    const {
-      getRootProps,
-      getInputProps,
-      fileRejections,
-      isFocused,
-      isDragAccept,
-      isDragReject,
-    } = useDropzone({
-      disabled,
-      onDrop: (acceptedFiles) => {
-        const files = acceptedFiles
-        setCustomError(undefined)
-        if (
-          dropzoneOptions?.maxFiles &&
-          (value?.length ?? 0) + files.length > dropzoneOptions.maxFiles
-        ) {
-          setCustomError(ERROR_MESSAGES.tooManyFiles(dropzoneOptions.maxFiles))
-          return
-        }
-        if (files) {
-          const addedFiles = files.map<FileState>((file) => ({
-            file,
-            key: crypto.randomUUID(),
-            progress: 'PENDING',
-            isPrivate: false,
-            tag: null,
-          }))
-          void onFilesAdded?.(addedFiles)
-          void onChange?.([...(value ?? []), ...addedFiles])
-        }
-      },
-      ...dropzoneOptions,
-    })
-
-    // styling
-    const dropZoneClassName = React.useMemo(
-      () =>
-        twMerge(
-          variants.base,
-          isFocused && variants.active,
-          disabled && variants.disabled,
-          (isDragReject ?? fileRejections[0]) && variants.reject,
-          isDragAccept && variants.accept,
-          className,
-        ).trim(),
-      [
-        isFocused,
-        fileRejections,
-        isDragAccept,
-        isDragReject,
-        disabled,
-        className,
-      ],
-    )
-
-    // error validation messages
-    const errorMessage = React.useMemo(() => {
-      if (fileRejections[0]) {
-        const { errors } = fileRejections[0]
-        if (errors[0]?.code === 'file-too-large') {
-          return ERROR_MESSAGES.fileTooLarge(dropzoneOptions?.maxSize ?? 0)
-        } else if (errors[0]?.code === 'file-invalid-type') {
-          return ERROR_MESSAGES.fileInvalidType()
-        } else if (errors[0]?.code === 'too-many-files') {
-          return ERROR_MESSAGES.tooManyFiles(dropzoneOptions?.maxFiles ?? 0)
-        } else if (errors[0]?.code === 'file-too-small') {
-          return ERROR_MESSAGES.fileTooSmall(dropzoneOptions?.minSize ?? 0)
-        } else {
-          return ERROR_MESSAGES.fileNotSupported()
-        }
-      }
-      return undefined
-    }, [fileRejections, dropzoneOptions])
-
-    return (
-      <div>
-        <div className='flex flex-col gap-2'>
-          <div>
-            <div
-              {...getRootProps({
-                className: dropZoneClassName,
-              })}
-            >
-              <input ref={ref} {...getInputProps()} />
-              <div className='text-foreground flex flex-col items-center justify-center text-xs'>
-                <UploadCloudIcon className='mb-1 h-7 w-7' />
-                <div className='text-foreground'>arraste & solte ou clique</div>
-              </div>
-            </div>
-
-            {/* Error Text */}
-            {errorMessage && (
-              <div className='text-destructive mt-1 text-xs'>
-                {customError ?? errorMessage}
-              </div>
-            )}
+        <div className='flex flex-col items-center justify-center text-center'>
+          <div
+            className='bg-background mb-2 flex size-11 shrink-0 items-center justify-center rounded-full border'
+            aria-hidden='true'
+          >
+            <FileUpIcon className='size-4 opacity-60' />
           </div>
-
-          {value?.map(
-            ({ file, progress, key, isPrivate: fileIsPrivate, tag }, i) => (
-              <div
-                key={i}
-                className='border-muted flex h-auto w-full flex-col justify-center rounded border px-4 py-4'
-              >
-                <div className='text-foreground flex items-center gap-2'>
-                  <div className='flex w-full flex-col items-start gap-2 overflow-hidden'>
-                    <div className='flex w-full items-center gap-2'>
-                      <FileIcon size='30' className='shrink-0' />
-                      <div className='overflow-hidden text-sm'>
-                        <div className='truncate'>{file.name}</div>
-                        <div className='text-foreground text-xs'>
-                          {formatFileSize(file.size)}
-                        </div>
-                      </div>
-                    </div>
-                    <div className='flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-4'>
-                      <PrivacySwitch
-                        isPrivate={fileIsPrivate}
-                        disabled={progress !== 'PENDING'}
-                        setIsPrivate={(checked) => {
-                          void onChange?.(
-                            value.map((fs) =>
-                              fs.key === key
-                                ? { ...fs, isPrivate: checked }
-                                : fs,
-                            ),
-                          )
-                        }}
-                      />
-                      <ExplorerGameFilter
-                        selectedCategories={tag}
-                        toggleCategory={(selected) =>
-                          onUpdateTag(key, selected as string | null)
-                        }
-                        buttonText={tag || 'Selecione um jogo...'}
-                        buttonClassName='border max-w-full justify-between w-fit'
-                        disabled={progress !== 'PENDING'}
-                        align='start'
-                      />
-                    </div>
-                  </div>
-                  <div className='grow' />
-                  <div className='flex w-12 justify-end text-xs'>
-                    {progress === 'PENDING' ? (
-                      <button
-                        className='hover:bg-muted rounded-md p-1 transition-colors duration-200'
-                        onClick={() => {
-                          void onChange?.(
-                            value.filter((_, index) => index !== i),
-                          )
-                        }}
-                      >
-                        <Trash2Icon className='shrink-0' />
-                      </button>
-                    ) : progress === 'ERROR' ? (
-                      <LucideFileWarning className='text-destructive shrink-0' />
-                    ) : progress !== 'COMPLETE' ? (
-                      <div>{Math.round(progress)}%</div>
-                    ) : (
-                      <CheckCircleIcon className='text-muted-foreground shrink-0' />
-                    )}
-                  </div>
-                </div>
-                {/* Progress Bar */}
-                {typeof progress === 'number' && (
-                  <div className='relative h-0'>
-                    <div className='bg-muted absolute top-1 h-1 w-full overflow-clip rounded-full'>
-                      <div
-                        className='bg-foreground h-full transition-all duration-300 ease-in-out'
-                        style={{
-                          width: progress ? `${progress}%` : '0%',
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            ),
-          )}
+          <p className='mb-1.5 text-sm font-medium'>Upload files</p>
+          <p className='text-muted-foreground mb-2 text-xs'>
+            Drag & drop or click to browse
+          </p>
+          <div className='text-muted-foreground/70 flex flex-wrap justify-center gap-1 text-xs'>
+            <span>Máximo {maxFiles} arquivos</span>
+            <span>∙</span>
+            <span>Até {formatBytes(maxSize)}</span>
+          </div>
         </div>
       </div>
-    )
-  },
-)
-MultiFileDropzone.displayName = 'MultiFileDropzone'
+      {errors.length > 0 && (
+        <div
+          className='text-destructive flex items-center gap-1 text-xs'
+          role='alert'
+        >
+          <AlertCircleIcon className='size-3 shrink-0' />
+          <span>{errors[0]}</span>
+        </div>
+      )}
 
-function formatFileSize(bytes?: number) {
-  if (!bytes) {
-    return '0 Bytes'
-  }
-  bytes = Number(bytes)
-  if (bytes === 0) {
-    return '0 Bytes'
-  }
-  const k = 1024
-  const dm = 2
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+      {files.length > 0 && (
+        <div className='space-y-2'>
+          {files.map((file) => (
+            <div
+              key={file.id}
+              className='bg-background flex flex-col gap-2 overflow-hidden rounded-lg border p-3'
+            >
+              <div className='relative flex flex-col items-start justify-between gap-2 md:flex-row md:items-center'>
+                <div className='flex items-center gap-3 overflow-hidden'>
+                  <div className='flex aspect-square size-10 shrink-0 items-center justify-center rounded border'>
+                    <FileIcon className='size-4' />
+                  </div>
+                  <div className='flex min-w-0 flex-col gap-0.5'>
+                    <p className='truncate text-[13px] font-medium'>
+                      {file.file instanceof File
+                        ? file.file.name
+                        : file.file.name}
+                    </p>
+                    <p className='text-muted-foreground text-xs'>
+                      {formatBytes(
+                        file.file instanceof File
+                          ? file.file.size
+                          : file.file.size,
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  size='icon'
+                  variant='ghost'
+                  className='text-muted-foreground/80 hover:text-foreground absolute inset-y-0 end-0 size-8 hover:bg-transparent md:static'
+                  onClick={() => removeFile(file.id)}
+                  aria-label='Remove file'
+                  disabled={isUploading}
+                >
+                  <XIcon className='size-4' aria-hidden='true' />
+                </Button>
+              </div>
+
+              <div className='flex flex-col justify-between gap-2 overflow-hidden sm:flex-row sm:items-end'>
+                <div className='flex flex-col space-y-1'>
+                  <Label className='text-muted-foreground flex items-center gap-2 text-xs font-medium sm:text-sm'>
+                    <GlobeLockIcon className='size-4' />
+                    Privacidade
+                  </Label>
+                  <PrivacySwitch
+                    isPrivate={file.isPrivate}
+                    setIsPrivate={(checked) => {
+                      updateFile(file.id, { isPrivate: checked })
+                    }}
+                    disabled={isUploading}
+                  />
+                </div>
+                <div className='flex w-full flex-col space-y-1'>
+                  <Label className='text-muted-foreground flex items-center gap-2 text-xs font-medium sm:text-sm'>
+                    <TagIcon className='size-4' />
+                    Jogo
+                  </Label>
+                  <ExplorerGameFilter
+                    selectedCategories={file.tag}
+                    toggleCategory={(selected) =>
+                      updateFile(file.id, {
+                        tag: selected as string,
+                        error: undefined,
+                      })
+                    }
+                    buttonText={file.tag || 'Selecione um jogo...'}
+                    buttonClassName={`justify-between ${file.error && 'border-destructive bg-red-500 text-destructive duration-0'}`}
+                    align='start'
+                    disabled={isUploading}
+                  />
+                </div>
+              </div>
+              {file.error && (
+                <p className='text-destructive mt-1 text-xs'>{file.error}</p>
+              )}
+            </div>
+          ))}
+
+          {files.length > 1 && (
+            <div>
+              <Button size='sm' variant='outline' onClick={clearFiles}>
+                Remove all files
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
 }
-
-export { MultiFileDropzone }
