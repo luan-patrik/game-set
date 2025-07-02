@@ -1,144 +1,138 @@
 'use client'
 
 import { uploadFile } from '@/app/actions/upload-file-actions'
+import { useFileUpload } from '@/hooks/use-file-upload'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useEdgeStore } from '../providers/EdgeStoreProvider'
 import { Button } from '../ui/button'
-import { MultiFileDropzone, type FileState } from './MultiFileDropzone'
+import { MultiFileDropzone } from './MultiFileDropzone'
 
 export const UploadForm = () => {
-  const [fileStates, setFileStates] = useState<FileState[]>([])
+  const maxFiles = 5
+  const maxSize = 128 * 1024
+
+  const [{ files, isDragging, errors: globalErrors }, fileActions] =
+    useFileUpload({
+      multiple: true,
+      maxFiles: maxFiles,
+      maxSize: maxSize,
+      minSize: 1,
+      accept: '.blk,.cfg,.ini,.txt',
+    })
+
   const [isUploading, setIsUploading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
+  const [submissionError, setSubmissionError] = useState<string | null>(null)
+
   const { edgestore } = useEdgeStore()
-
-  function updateFileProgress(key: string, progress: FileState['progress']) {
-    setFileStates((fileStates) => {
-      const newFileStates = structuredClone(fileStates)
-      const fileState = newFileStates.find((fileState) => fileState.key === key)
-      if (fileState) {
-        fileState.progress = progress
-      }
-      return newFileStates
-    })
-  }
-
-  const handleUpdateTag = (key: string, gameName: string | null) => {
-    setFileStates((prevFileStates) => {
-      const newFileStates = structuredClone(prevFileStates)
-      const fileState = newFileStates.find((fs) => fs.key === key)
-      if (fileState) {
-        fileState.tag = gameName
-      }
-      return newFileStates
-    })
-  }
 
   const onSubmit = async () => {
     setIsUploading(true)
-    setError(null)
+    setSubmissionError(null)
+    fileActions.clearErrors()
 
-    const filesToUpload = fileStates.filter(
-      (fileState) => fileState.progress === 'PENDING',
-    )
-
-    if (filesToUpload.length === 0) {
+    if (files.length === 0) {
+      setSubmissionError('Nenhum arquivo para enviar.')
       setIsUploading(false)
       return
     }
 
-    const filesWithoutGameTag = filesToUpload.filter(
-      (fileState) => !fileState.tag,
-    )
-    if (filesWithoutGameTag.length > 0) {
-      setError(`Selecione uma tag de jogo para todos os arquivos pendentes.`)
+    let hasValidationErrors = false
+
+    files.forEach((file) => {
+      if (!file.tag) {
+        hasValidationErrors = true
+        fileActions.updateFile(file.id, {
+          error: 'Selecione uma tag para o arquivo.',
+        })
+      } else {
+        fileActions.updateFile(file.id, { error: undefined })
+      }
+    })
+
+    if (hasValidationErrors) {
       setIsUploading(false)
-      setFileStates((prevStates) =>
-        prevStates.map((fs) =>
-          filesWithoutGameTag.some((fwt) => fwt.key === fs.key)
-            ? { ...fs, progress: 'ERROR' }
-            : fs,
-        ),
-      )
       return
     }
+    const filesToUpload = files.filter((file) => !file.error)
 
-    const uploadPromises = filesToUpload.map(async (fileState) => {
+    const uploadPromises = filesToUpload.map(async (fileWithPreview) => {
       try {
+        if (!(fileWithPreview.file instanceof File)) return fileWithPreview
+
         const response = await edgestore.publicFiles.upload({
-          file: fileState.file,
+          file: fileWithPreview.file,
           input: { type: 'post' },
-          onProgressChange: async (progress) => {
-            updateFileProgress(fileState.key, progress)
-            if (progress === 100) {
-              await new Promise((resolve) => setTimeout(resolve, 1000))
-              updateFileProgress(fileState.key, 'COMPLETE')
-            }
-          },
         })
 
         const result = await uploadFile({
           fileUrl: response.url,
-          name: fileState.file.name,
-          size: fileState.file.size,
-          isPrivate: fileState.isPrivate,
-          tag: fileState.tag as string,
+          name: fileWithPreview.file.name,
+          size: fileWithPreview.file.size,
+          isPrivate: fileWithPreview.isPrivate,
+          tag: fileWithPreview.tag as string,
         })
 
         if (!result.success) {
           throw new Error(result.error || 'Erro ao fazer upload.')
         }
+
+        fileActions.removeFile(fileWithPreview.id)
+
+        toast.success('Arquivo adicionado com sucesso!', {
+          position: 'bottom-center',
+        })
+        return {
+          success: true,
+          ...fileWithPreview,
+          error: undefined,
+        }
       } catch (error) {
-        updateFileProgress(fileState.key, 'ERROR')
-        setError(
-          `Erro ao processar o arquivo: ${fileState.file.name}. ${error instanceof Error ? error.message : String(error)}`,
+        const errorMessage = `Erro no upload de "${fileWithPreview.file.name}": ${
+          error instanceof Error ? error.message : String(error)
+        }`
+        fileActions.updateFile(fileWithPreview.id, { error: errorMessage })
+        setSubmissionError(
+          'Alguns arquivos falharam no upload. Verifique acima.',
         )
+        toast.error(errorMessage, {
+          position: 'bottom-center',
+        })
+        return { ...fileWithPreview, error: errorMessage }
       }
     })
 
     await Promise.all(uploadPromises)
+
     setIsUploading(false)
   }
-
-  const pendingFilesCount = fileStates.filter(
-    (fileState) => fileState.progress === 'PENDING',
-  ).length
 
   return (
     <div className='py-4'>
       <MultiFileDropzone
-        dropzoneOptions={{
-          maxFiles: 12,
-          accept: { '.blk,.cfg,.ini,.txt': [] },
-          minSize: 1, // 1Byte
-          maxSize: 1024 * 128, //128KB
-        }}
-        className='w-full'
-        value={fileStates}
-        onChange={(files) => {
-          setFileStates(files)
-        }}
-        onFilesAdded={(addedFiles) => {
-          setFileStates((prev) => [
-            ...prev,
-            ...addedFiles.map((fileState) => ({
-              ...fileState,
-              isPrivate: false,
-              tag: null,
-            })),
-          ])
-        }}
-        onUpdateTag={handleUpdateTag}
+        files={files}
+        addFiles={fileActions.addFiles}
+        updateFile={fileActions.updateFile}
+        removeFile={fileActions.removeFile}
+        clearFiles={fileActions.clearFiles}
+        handleDragEnter={fileActions.handleDragEnter}
+        handleDragLeave={fileActions.handleDragLeave}
+        handleDragOver={fileActions.handleDragOver}
+        handleDrop={fileActions.handleDrop}
+        openFileDialog={fileActions.openFileDialog}
+        getInputProps={fileActions.getInputProps}
+        maxFiles={maxFiles}
+        maxSize={maxSize}
+        isDragging={isDragging}
+        errors={globalErrors}
       />
-      <Button
-        className='mt-2 w-full'
-        onClick={onSubmit}
-        disabled={isUploading || pendingFilesCount === 0}
-      >
+      <Button className='mt-2 w-full' onClick={onSubmit} disabled={isUploading}>
         {isUploading ? 'Enviando...' : 'Enviar'}
       </Button>
 
-      {error && <p className='text-destructive mt-2 text-sm'>{error}</p>}
+      {submissionError && (
+        <p className='text-destructive mt-2 text-sm'>{submissionError}</p>
+      )}
     </div>
   )
 }

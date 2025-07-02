@@ -30,7 +30,7 @@ export const getGameName = async (
         Authorization: `Bearer ${token}`,
         'Content-Type': 'text/plain',
       },
-      body: `search "${searchTerm}"; fields name; limit 10;`,
+      body: `where name ~ *"${searchTerm}"*; fields name; limit 10;`,
       cache: 'force-cache',
       next: {
         revalidate: 3600,

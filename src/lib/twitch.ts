@@ -10,10 +10,6 @@ let accessToken: string | null = null
 let tokenExpiresAt: number = 0
 const TOKEN_BUFFER_TIME = 5 * 60 * 1000
 
-const isTokenValid = (): boolean => {
-  return Boolean(accessToken && tokenExpiresAt > Date.now())
-}
-
 const refreshToken = async (): Promise<string> => {
   try {
     const response = await fetch('https://id.twitch.tv/oauth2/token', {
