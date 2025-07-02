@@ -34,9 +34,13 @@ export const DeleteButton = ({
       try {
         await edgestore.publicFiles.delete({ url: fileUrl })
         await deleteFile({ id, fileUrl })
-        toast.success('Configuração excluída com sucesso!')
+        toast.success('Configuração excluída com sucesso!', {
+          position: 'bottom-center',
+        })
       } catch (error) {
-        toast.error('Falha ao excluir a configuração.')
+        toast.error('Falha ao excluir a configuração.', {
+          position: 'bottom-center',
+        })
       }
     })
   }

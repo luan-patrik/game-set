@@ -3,6 +3,7 @@
 import { uploadFile } from '@/app/actions/upload-file-actions'
 import { useFileUpload } from '@/hooks/use-file-upload'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useEdgeStore } from '../providers/EdgeStoreProvider'
 import { Button } from '../ui/button'
 import { MultiFileDropzone } from './MultiFileDropzone'
@@ -78,6 +79,9 @@ export const UploadForm = () => {
 
         fileActions.removeFile(fileWithPreview.id)
 
+        toast.success('Arquivo adicionado com sucesso!', {
+          position: 'bottom-center',
+        })
         return {
           success: true,
           ...fileWithPreview,
@@ -91,6 +95,9 @@ export const UploadForm = () => {
         setSubmissionError(
           'Alguns arquivos falharam no upload. Verifique acima.',
         )
+        toast.error(errorMessage, {
+          position: 'bottom-center',
+        })
         return { ...fileWithPreview, error: errorMessage }
       }
     })
