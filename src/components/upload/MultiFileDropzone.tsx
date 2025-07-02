@@ -53,7 +53,7 @@ export const MultiFileDropzone = ({
   maxSize,
   isDragging,
   errors,
-  isUploading = false,
+  isUploading,
 }: MultiFileDropzoneProps) => {
   return (
     <div className='flex flex-col gap-2'>
@@ -109,11 +109,11 @@ export const MultiFileDropzone = ({
               className='bg-background flex flex-col gap-2 overflow-hidden rounded-lg border p-3'
             >
               <div className='relative flex flex-col items-start justify-between gap-2 md:flex-row md:items-center'>
-                <div className='flex items-center gap-3 overflow-hidden'>
+                <div className='flex w-full items-center gap-3 overflow-hidden'>
                   <div className='flex aspect-square size-10 shrink-0 items-center justify-center rounded border'>
                     <FileIcon className='size-4' />
                   </div>
-                  <div className='flex min-w-0 flex-col gap-0.5'>
+                  <div className='flex min-w-0 flex-col gap-0.5 overflow-hidden pe-10 md:pe-0'>
                     <p className='truncate text-[13px] font-medium'>
                       {file.file instanceof File
                         ? file.file.name
@@ -182,7 +182,12 @@ export const MultiFileDropzone = ({
 
           {files.length > 1 && (
             <div>
-              <Button size='sm' variant='outline' onClick={clearFiles}>
+              <Button
+                size='sm'
+                variant='outline'
+                onClick={clearFiles}
+                disabled={isUploading}
+              >
                 Remove all files
               </Button>
             </div>

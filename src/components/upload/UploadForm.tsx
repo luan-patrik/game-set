@@ -125,6 +125,7 @@ export const UploadForm = () => {
         maxSize={maxSize}
         isDragging={isDragging}
         errors={globalErrors}
+        isUploading={isUploading}
       />
       <Button className='mt-2 w-full' onClick={onSubmit} disabled={isUploading}>
         {isUploading ? 'Enviando...' : 'Enviar'}
