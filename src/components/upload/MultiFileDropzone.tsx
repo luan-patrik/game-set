@@ -53,7 +53,7 @@ export const MultiFileDropzone = ({
   maxSize,
   isDragging,
   errors,
-  isUploading = false,
+  isUploading,
 }: MultiFileDropzoneProps) => {
   return (
     <div className='flex flex-col gap-2'>
@@ -182,7 +182,12 @@ export const MultiFileDropzone = ({
 
           {files.length > 1 && (
             <div>
-              <Button size='sm' variant='outline' onClick={clearFiles}>
+              <Button
+                size='sm'
+                variant='outline'
+                onClick={clearFiles}
+                disabled={isUploading}
+              >
                 Remove all files
               </Button>
             </div>
