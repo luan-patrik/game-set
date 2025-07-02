@@ -8,12 +8,15 @@ import { Button } from '../ui/button'
 import { MultiFileDropzone } from './MultiFileDropzone'
 
 export const UploadForm = () => {
+  const maxFiles = 5
+  const maxSize = 128 * 1024
+
   const [{ files, isDragging, errors: globalErrors }, fileActions] =
     useFileUpload({
       multiple: true,
-      maxFiles: 5,
-      maxSize: 128 * 1024, // 128 KB
-      minSize: 1, // 1 Byte
+      maxFiles: maxFiles,
+      maxSize: maxSize,
+      minSize: 1,
       accept: '.blk,.cfg,.ini,.txt',
     })
 
@@ -111,6 +114,8 @@ export const UploadForm = () => {
         handleDrop={fileActions.handleDrop}
         openFileDialog={fileActions.openFileDialog}
         getInputProps={fileActions.getInputProps}
+        maxFiles={maxFiles}
+        maxSize={maxSize}
         isDragging={isDragging}
         errors={globalErrors}
       />

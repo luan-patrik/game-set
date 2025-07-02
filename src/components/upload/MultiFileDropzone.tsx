@@ -1,5 +1,6 @@
 import {
   FileUploadActions,
+  FileUploadOptions,
   FileUploadState,
   FileWithPreview,
   formatBytes,
@@ -29,6 +30,8 @@ interface MultiFileDropzoneProps {
   handleDrop: FileUploadActions['handleDrop']
   openFileDialog: FileUploadActions['openFileDialog']
   getInputProps: FileUploadActions['getInputProps']
+  maxFiles: FileUploadOptions['maxFiles']
+  maxSize: FileUploadOptions['maxSize']
   isDragging: FileUploadState['isDragging']
   errors: FileUploadState['errors']
   isUploading?: boolean
@@ -46,13 +49,12 @@ export const MultiFileDropzone = ({
   handleDrop,
   openFileDialog,
   getInputProps,
+  maxFiles,
+  maxSize,
   isDragging,
   errors,
   isUploading = false,
 }: MultiFileDropzoneProps) => {
-  const maxFiles = 5
-  const maxSize = 128 * 1024
-
   return (
     <div className='flex flex-col gap-2'>
       <div
@@ -78,14 +80,14 @@ export const MultiFileDropzone = ({
           >
             <FileUpIcon className='size-4 opacity-60' />
           </div>
-          <p className='mb-1.5 text-sm font-medium'>Upload files</p>
+          <p className='mb-1.5 text-sm font-medium'>Adicionar arquivos</p>
           <p className='text-muted-foreground mb-2 text-xs'>
-            Drag & drop or click to browse
+            Arraste & solte ou clique para adicionar arquivos
           </p>
           <div className='text-muted-foreground/70 flex flex-wrap justify-center gap-1 text-xs'>
             <span>Máximo {maxFiles} arquivos</span>
             <span>∙</span>
-            <span>Até {formatBytes(maxSize)}</span>
+            <span>Até {formatBytes(maxSize as number)}</span>
           </div>
         </div>
       </div>
